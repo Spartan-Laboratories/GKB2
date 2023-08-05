@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups>
+    <oils>
+        <item>clear</item>
+        <item>reflective</item>
+        <item>tainted</item>
+        <item>sepia</item>
+        <item>amber</item>
+        <item>verdant</item>
+        <item>teal</item>
+        <item>azure</item>
+        <item>indigo</item>
+        <item>violet</item>
+        <item>crimson</item>
+        <item>black</item>
+        <item>opalescent</item>
+        <item>silver</item>
+        <item>golden</item>
+    </oils>
+</groups>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Keys>
+    <Key>
+        <name>poe:currencyitems</name>
+        <initial>c-item-hoverbox c-item-hoverbox--large</initial>
+        <initial>title</initial>
+        <initial>"></initial>
+        <terminal>&lt;</terminal>
+    </Key>
+</Keys>

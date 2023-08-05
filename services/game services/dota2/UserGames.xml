@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Service>
+    <url>https://www.dotabuff.com/players/userid/matches</url>
+    <keyname>dota2:match id</keyname>
+    <oldvalue>Games/dota2/lastmatchid</oldvalue>
+</Service>

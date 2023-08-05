@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Keys>
+	<Key>
+		<name>dota2:duration</name>
+		<initial>/dd>&lt;dt>Region&lt;/dt>&lt;/dl>&lt;dl>&lt;dd></initial>
+		<terminal>&lt;/dd>&lt;dt>Duration</terminal>
+	</Key>
+	<Key>
+		<name>dota2:dbicon</name>
+		<initial>property="og:image" content="</initial>
+		<terminal>" /></terminal></Key>
+	<Key>
+		<name>dota2:radiant score</name>
+		<initial>>&lt;span class="the-radiant score"></initial>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:dire score</name>
+		<initial>>&lt;span class="the-dire score"></initial>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:net worth</name>
+		<initial>Total Gold Earned"></initial>
+		<validation>digit</validation>
+		<alternate>></alternate>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:lasthit</name>
+		<initial>="tf-r r-tab r-group-2 cell-minor"></initial>
+		<validation>digit</validation>
+		<alternate>></alternate>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:deny</name>
+		<initial>tf-pl r-tab r-group-2 cell-minor"></initial>
+		<validation>digit</validation>
+		<alternate>></alternate>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:gpm</name>
+		<delegate>dota2:lasthit</delegate>
+	</Key>
+	<Key>
+		<name>dota2:xpm</name>
+		<delegate>dota2:deny</delegate>
+	</Key>
+	<Key>
+		<name>dota2:damage</name>
+		<initial>"tf-r r-tab r-group-3 cell-minor"></initial>
+		<validation>digit</validation>
+		<alternate>></alternate>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:healing</name>
+		<delegate>dota2:damage</delegate>
+	</Key>
+	<Key>
+		<name>dota2:building damage</name>
+		<initial>class="tf-r r-tab r-group-3 cell-minor"></initial>
+		<validation>digit</validation>
+		<alternate>></alternate>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:steam name</name>
+		<initial>http-equiv="Content-Type" />&lt;title></initial>
+		<terminal> - Matches</terminal>
+	</Key>
+	<Key>
+		<name>dota2:hero name</name>
+		<initial>&lt;div class="image-container image-container-hero image-container-icon">&lt;a href="/heroes/</initial>
+		<terminal>">&lt;</terminal>
+	</Key>
+	<Key>
+		<name>dota2:hero image</name>
+		<initial>tooltip" src="</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>dota2:match outcome</name>
+		<initial>>&lt;/td>&lt;td>&lt;a class="</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>dota2:kills</name>
+		<initial>kda-record</initial>
+		<initial>&lt;span class="value"></initial>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:deaths</name>
+		<initial>&lt;span class="value"></initial>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:assists</name>
+		<initial>&lt;span class="value"></initial>
+		<terminal>&lt;/</terminal>
+	</Key>
+	<Key>
+		<name>dota2:item image</name>
+		<initial>img class="image-item image-plusicon</initial>
+		<initial>" src="</initial>
+		<terminal>" />&lt;</terminal>
+	</Key>	
+	<Key>
+		<name>dota2:match id</name>
+		<initial>class="cell-large">&lt;a href="/matches/</initial>
+		<terminal>"></terminal>
+	</Key>
+	<Key>
+		<name>dota2:player lane</name>
+		<initial>acronym rel="neighbour-tooltip"></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>dota2:player role</name>
+		<initial>fa-fw role-icon</initial>
+		<initial>></initial>
+		<initial>></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>dota2:player lane outcome</name>
+		<initial>Lane Outcome"></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>dota2:talent</name>
+		<initial>"></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>source</name>
+		<initial>src="</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>tags</name>
+		<initial>></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>video id</name>
+		<initial>watch?v=</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>cat</name>
+		<initial>property="og:image" content="</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>cat2</name>
+		<initial>{"file":"</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>cannonical</name>
+		<initial>link rel="canonical" href="</initial>
+		<terminal>"</terminal>
+	</Key>
+	<Key>
+		<name>valorant wins</name>
+		<initial>span class="value" data-v-2abf40aa></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>valorant profile pic</name>
+		<initial>preserveAspectRatio="xMinYMin slice" href="</initial>
+		<terminal>"</terminal></Key>
+	<Key>
+		<name>current rank icon</name>
+		<initial>rating-entry__rank-icon</initial>
+		<validation>img src="</validation>
+		<terminal>"</terminal></Key>
+	<Key>
+		<name>random image</name>
+		<initial>src='</initial>
+		<terminal>'</terminal></Key>
+	<Key>
+		<name>dota2patchnotes</name>
+		<initial>guid/</initial>
+		<initial>></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>dota2patchtitle</name>
+		<initial>guid</initial>
+		<initial>title></initial>
+		<terminal>&lt;</terminal>
+	</Key>
+	<Key>
+		<name>dota2patchurl</name>
+		<initial>link></initial>
+	</Key>
+	<Key>
+		<name>owprofilepic</name>
+		<initial>og:image" content="</initial>
+		<terminal>"</terminal></Key>
+	<Key>
+		<name>owgameswon</name>
+		<initial>Games Won</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owavggametime</name>
+		<initial>Avg Game Time</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owtimespentplaying</name>
+		<initial>Time Spent Playing</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owtimespentalive</name>
+		<initial>Time Spent Alive</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owtimespentdead</name>
+		<initial>Time Spent Dead</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owtotalmedals</name>
+		<initial>Total Medals</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owgoldmedals</name>
+		<initial>Gold Medals</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owsilvermedals</name>
+		<initial>Silver Medals</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owbronzemedals</name>
+		<initial>Bronze Medals</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owvotingcards</name>
+		<initial>Voting Cards</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>oweliminations</name>
+		<initial>Eliminations</initial>
+		<initial>Eliminations</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owfinalblows</name>
+		<initial>Final Blows</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owsolokills</name>
+		<initial>Solo Kills</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owdeaths</name>
+		<initial>Deaths</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owedratio</name>
+		<initial>E:D Ratio</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owdamagedone</name>
+		<initial>Damage Done</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>owhealingdone</name>
+		<initial>Healing Done</initial>
+		<initial>td></initial>
+		<initial>td></initial>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>closeopen</name>
+		<initial>></initial>
+		<validation>alphabetic</validation>
+		<alternate>></alternate>
+		<terminal>&lt;</terminal></Key>
+	<Key>
+		<name>name</name>
+		<initial>title></initial>
+		<terminal>- H</terminal>
+	</Key>
+</Keys>
