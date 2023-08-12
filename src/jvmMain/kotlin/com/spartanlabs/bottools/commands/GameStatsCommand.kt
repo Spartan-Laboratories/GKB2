@@ -1,7 +1,7 @@
 package com.spartanlabs.bottools.commands
 
-import com.spartanlabs.bottools.commands.OrganizationCommand.orgData
 import com.spartanlabs.bottools.dataprocessing.D
+import com.spartanlabs.bottools.dataprocessing.KotGDP
 import com.spartanlabs.bottools.services.ServiceCommand
 import com.spartanlabs.bottools.services.UserGameService
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -26,15 +26,10 @@ abstract class GameStatsCommand
         //  Command setup
         subCommandRequired = true
         makeInteractive()
-        // Subcommands
-        SCSetID()
-        SCGetID()
         // Organization
-        last + orgData("game", "lastgame")
-        //set.addCommand("id", "setid")
-        //get.addCommand("id", "getid").addCommand("stats", "showstats")
+        last and "game" becomes "lastgame"
         PropertyCommand(::matchesChannelId, this, "channel")
-        TargetablePropertyCommand(::userID, this)
+        TargetablePropertyCommand(::user_ID, this)
         //id.addCommand("set", "setid").addCommand("get", "getid").addCommand("show", "getid")
         //show.addCommand("id", "getid").addCommand("stats", "showstats")
     }
@@ -55,7 +50,7 @@ abstract class GameStatsCommand
             if (tagline != null && Character.isDigit(tagline[0]))  //if the first character of the tagline is numeric
                 tagline = tagSymbol + tagline   //then add tag symbol to the beginning of it
             val fullTag = args[0] + (tagline ?: "")
-            userID = fullTag
+            user_ID = fullTag
             reply("The $gameName ID of ${targetMember!!.effectiveName} has been set to $fullTag")
         }
     }
@@ -68,15 +63,15 @@ abstract class GameStatsCommand
         }
 
         override operator fun invoke(args: Array<String>){
-            if(userID.isNullOrBlank())  sendNoIDMessage()
-            else                        reply("The in-game ID of " + (targetMember!!.user.name) + " is " + userID)
+            if(user_ID.isNullOrBlank())  sendNoIDMessage()
+            else                        reply("The in-game ID of " + (targetMember!!.user.name) + " is " + user_ID)
         }
     }
     /**
      * Returns the in-game username of the guild member that is the target of this command
      * @return In-game username of the target member
      */
-    internal var userID: String?
+    internal var user_ID: String?
         get()       = D/guild/targetMember!!/"Games"/gameName-"id"
         set(value)  = D/guild/targetMember!!/"Games"/gameName/"id" + value!!
     protected var lastMatchID: String?
@@ -85,11 +80,22 @@ abstract class GameStatsCommand
     internal var matchesChannelId: String?
         get()       = D/guild/"Games"/gameName-"matcheschannel"
         set(value)  = D/guild/"Games"/gameName/"matcheschannel"+value!!
-    protected fun sendNoIDMessage() = reply("This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID")
+    private class DataCommand(dataPropertyAccessPoint:KotGDP.DataAccessPoint, dataPropertyName:String, parent:GameStatsCommand)
+    :PropertyCommand(GameStatsCommand.PropertyHolder(dataPropertyAccessPoint, dataPropertyName)::property, parent){}
+    private fun getDataCommand(valueName:String) = DataCommand(dataPropertyAccessPoint, valueName, this)
+    val dataPropertyAccessPoint:KotGDP.DataAccessPoint
+        get() = D/guild/"Games"/gameName
+    class PropertyHolder(private val dataPoint:KotGDP.DataAccessPoint, private val endPoint:String){
+        var property:String?
+            get()       = dataPoint-endPoint
+            set(value)  = dataPoint/endPoint+value!!
+    }
 
+    protected fun sendNoIDMessage() = reply("This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID")
+    var ss : (Array<String>) -> Unit = {}
     protected open fun showStats(args: Array<String>){}
     private fun manualLastGame(args: Array<String>){
-        require(userID != null){
+        require(user_ID != null){
             reply("Could not get the last game that this user has played because their id has not been set.")
             return
         }

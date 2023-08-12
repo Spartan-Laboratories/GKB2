@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><data>
+    <defaultRole>online</defaultRole>
+    <welcomeMessage>hello</welcomeMessage>
+    <d2matchinfochannel>464138676432011304</d2matchinfochannel>
+    <dotapatchnoteschannel>464138676432011304</dotapatchnoteschannel>
+    <welcomeMessages>
+        <welcomeMessage>
+            <channel>464799222928244737</channel>
+            <id>1059361573367459903</id>
+        </welcomeMessage>
+    </welcomeMessages>
+    <reactionRoles>
+        <reactionRole>
+            <emote>1005959818705653812</emote>
+            <role>1005959884526850150</role>
+        </reactionRole>
+    </reactionRoles>
+<Games>
+        <dota2>
+            <matcheschannel>464138676432011304</matcheschannel>
+        </dota2>
+    </Games>
+</data>

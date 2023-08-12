@@ -101,7 +101,7 @@ abstract class Command protected constructor(val name: String) {
      */
     var messageEvent: MessageReceivedEvent? = null
     protected var deferredReply: ReplyCallbackAction? = null
-    private var scEvent: SlashCommandInteractionEvent? = null
+    var scEvent: SlashCommandInteractionEvent? = null
     val get     by lazy { this + "get" }
     val set     by lazy { this + "set" }
     val enable  by lazy { this + "enable" }
@@ -145,7 +145,7 @@ abstract class Command protected constructor(val name: String) {
     infix fun say(message: String) = Bot say message in channel
     protected infix fun show(url: String) = Bot show url in channel
     protected infix fun show(file: File) = Bot send file in channel
-
+    protected infix fun File.sendIn(channel: MessageChannel) = Bot send this in channel
     /**
      * Outputs the given message in the text channel of the event set by [pullInteractionData(GuildMessageReceivedEvent)].
      * <br></br>Works the same way as [.say] but with a delay in seconds set by secondsDelay.
@@ -160,19 +160,14 @@ abstract class Command protected constructor(val name: String) {
         else isValidSubCommand(args[0])
 
     private val subcommandNames: String
-        private get() {
-            var subcommandNames = ""
-            for (commandName in subCommands.keys) subcommandNames += commandName.toString() + ", "
-            return subcommandNames
-        }
+        get() = subCommands.keys.toString().let { it.substring(1,it.length-1) }
 
     private fun showSCErrorMessage(errorMessage: String) {
         say(errorMessage)
-        say(
-            """
-                The possible sub-commands are:
-                ${subcommandNames}
-                """.trimIndent()
+        say("""
+            The possible sub-commands are:
+            ${subcommandNames}
+            """.trimIndent()
         )
     }
 

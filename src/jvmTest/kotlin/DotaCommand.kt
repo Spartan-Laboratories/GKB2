@@ -36,16 +36,16 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
     }
 
     private fun showLastGameStats(auto: Boolean = false) {
-        openDB("players/$userID") {
+        openDB("players/$user_ID") {
             mapValueByKey("dbicon")
         }
-        openDB("players/$userID/matches") {
+        openDB("players/$user_ID/matches") {
             mapValueByKey("steam name");
             mapValueByKey("hero name")
             "hero image".let { valueMap.put(it, getValueFromKey(it))}
             mapValueByKey("match outcome", "kills", "deaths", "assists")
         }
-        openDB("players/$userID/matches"){
+        openDB("players/$user_ID/matches"){
             mapValueByKey("match id");
         }
         val matchID = valueMap["match id"]
@@ -84,7 +84,7 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
         // Build the embed based on the values in the valuemap
         valueMap.let {eb
             .setColor(if(it["match outcome"]!!.lowercase() == "won") Color.GREEN else Color.RED)
-            .setAuthor(it["steam name"], "$primaryAddress/players/$userID", it["dbicon"])
+            .setAuthor(it["steam name"], "$primaryAddress/players/$user_ID", it["dbicon"])
             .setTitle(it["hero name"], "https://www.dotabuff.com/matches/$matchID")
             .setThumbnail("http://dotabuff.com${it["hero image"]}")
             .setTitle(it["match outcome"]!!.uppercase(),"https://www.dotabuff.com/matches/$matchID")

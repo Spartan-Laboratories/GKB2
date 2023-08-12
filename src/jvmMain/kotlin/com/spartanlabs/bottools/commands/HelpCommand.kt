@@ -1,5 +1,7 @@
 package com.spartanlabs.bottools.commands
 
+import com.spartanlabs.bottools.botactions.contains
+import com.spartanlabs.bottools.botactions.say
 import com.spartanlabs.bottools.main.Bot
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
@@ -33,10 +35,12 @@ class HelpCommand : Command("help") {
             executeGenericVersion()
             return
         }
-        Bot.commands[commandAlias[0]]!!.setEvent(messageEvent!!).help(getSecondaryArgs(commandAlias))
+        Bot.commands[getOption("commandname")!!.asString.split(" ")[0]]?.apply{
+            this.channel = this@HelpCommand.channel
+            help(getSecondaryArgs(commandAlias))
+        } ?: Unit.also { Bot say "no such command was found" in channel }
     }
-
-    private fun createFields() {
-        for (name in Bot.commands.keys) eb = eb.addField("`/$name`", Bot.commands[name]!!.helpMessage, false)
+    private fun createFields() = Bot.commands.keys.forEach { keyName ->
+        eb = eb.addField("`/$keyName`", Bot.commands[keyName]!!.helpMessage, false)
     }
 }

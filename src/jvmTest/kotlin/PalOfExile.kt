@@ -1,16 +1,19 @@
 
 import com.spartanlabs.bottools.botactions.*
 import com.spartanlabs.bottools.commands.GameStatsCommand
+import com.spartanlabs.bottools.commands.MethodCommand
 import com.spartanlabs.bottools.commands.Option
 import com.spartanlabs.bottools.commands.SubCommand
 import com.spartanlabs.bottools.dataprocessing.BaseXMLReader
 import com.spartanlabs.bottools.dataprocessing.children
 import com.spartanlabs.bottools.dataprocessing.getChild
 import com.spartanlabs.bottools.main.Bot
-import com.spartanlabs.generictools.capitalizeEveryWord
-import com.spartanlabs.generictools.cropImage
-import com.spartanlabs.generictools.saveImage
-import com.spartanlabs.generictools.screenshotBrowser
+import com.spartanlabs.generaltools.cropImage
+import com.spartanlabs.generaltools.capitalizeEveryWord
+import com.spartanlabs.webtools.to
+import com.spartanlabs.webtools.WebViewer
+
+
 
 class PalOfExile() : GameStatsCommand("poe") {
     //override var brief = "Your best pal in all of Oriath"
@@ -32,7 +35,6 @@ class PalOfExile() : GameStatsCommand("poe") {
         price and "currency" becomes "currency"
         price and "shart" becomes "shart"
         price and "oils" becomes "oils"
-
         /*
         val `acquire currency names` = "acquirecurrencynames"
         MethodCommand(::acquireCurrencyNames, `acquire currency names`, "$`acquire currency names` description", this)
@@ -55,9 +57,10 @@ class PalOfExile() : GameStatsCommand("poe") {
             val itemName = getOption(optionName)!!.asString
             reply("Looking up the item: $itemName from the category: $name")
             val inSiteName = itemName.replace(" ","-")
-            val screenshot = screenshotBrowser("https://poe.ninja/challenge/$ninjaName/$inSiteName")
+            val url = "https://poe.ninja/challenge/$ninjaName/$inSiteName"
+            val screenshot = WebViewer() screenshot url
             val crop = cropImage(screenshot, 832, 205, 1050, 868)
-            val imageFile = saveImage(crop, "src/jvmTest/resources/screenshot")
+            val imageFile = crop to "src/jvmTest/resources/screenshot"
             Bot send imageFile in channel
         }
     }

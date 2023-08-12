@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><data>
+                	
+    
+    
+    
+    <defaultRole>Private</defaultRole>
+                	
+    
+    
+    
+    <welcomeMessage>Welcome to America, motherfucker!</welcomeMessage>
+                	
+    
+    
+    
+    <welcomeMessageChannel>announcements</welcomeMessageChannel>
+                	
+    
+    
+    
+    <d2matchinfochannel>545287695069478914</d2matchinfochannel>
+                	
+    
+    
+    
+    <dotapatchnoteschannel>546740682753048577</dotapatchnoteschannel>
+                
+    
+
+
+    
+    <welcomeMessages/>
+    
+    <reactionRoles/>
+<Games>
+        <dota2>
+            <matcheschannel>545287695069478914</matcheschannel>
+        </dota2>
+    </Games>
+</data>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Enlisted>
+	<Rank>
+		<Name>Specialist</Name>
+		<Points>400</Points>
+	</Rank>
+	<Rank>
+		<Name>Sergeant</Name>
+		<Points>800</Points>
+	</Rank>
+	<Rank>
+		<Name>Staff Sergeant</Name>
+		<Points>1600</Points>
+	</Rank>
+	<Rank>
+		<Name>Sergeant First Class</Name>
+		<Points>2800</Points>
+	</Rank>
+	<Rank>
+		<Name>First Sergeant</Name>
+		<Points>4800</Points>
+	</Rank>
+</Enlisted>

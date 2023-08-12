@@ -2,6 +2,8 @@ package com.spartanlabs.bottools.botactions.online
 
 import com.spartanlabs.bottools.botactions.*
 import com.spartanlabs.bottools.main.Bot
+import com.spartanlabs.webtools.Connector
+import com.spartanlabs.webtools.to
 import it.skrape.fetcher.HttpFetcher
 import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
@@ -26,9 +28,9 @@ private val connector = Connector()
  * @param imageAddress the URL of the image that is to be sent
  */
 fun sendImageInChannel(imageAddress: String, channel: MessageChannel) =
-    com.spartanlabs.bottools.botactions.sendFileInChannel(channel, connector saveImage imageAddress to "res/temp.png")
+    com.spartanlabs.bottools.botactions.sendFileInChannel(channel, connector download imageAddress to "res/temp.png")
 data class SaveImageAction(val savedImage:String){
-    infix fun to(fileName: String) = connector saveImage savedImage to fileName
+    infix fun to(fileName: String) = connector download savedImage to fileName
 }
 infix fun Bot.Companion.save(imageURL:String) = SaveImageAction(imageURL)
 
@@ -72,16 +74,6 @@ fun get(URL: String): JSONObject = JSONObject(JSONTokener(StringReader(connector
  * Must be done before opening another one.
  */
 fun closeConnection() = connector.close()
-
-/**
- * Takes the image at the given URL and saves it to a file with the given file name.
- * File does not need to already exist. If it does not exist, then one will be created.
- * @param url where the image is located
- * @param fileName the name of the file to which you want to save the image.
- * @return
- */
-
-fun to(url: String, fileName: String): File = connector.saveImage(url, fileName)
 
 /**
  * Allows for easier browsing of html data by skipping the line

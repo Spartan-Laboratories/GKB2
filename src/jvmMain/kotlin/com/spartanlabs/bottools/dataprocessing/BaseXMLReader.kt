@@ -31,12 +31,14 @@ open class BaseXMLReader : XMLReader {
      */
     init {
         //debug = true;
-        try { with(tr) {
-            setOutputProperty(OutputKeys.INDENT, "yes")
-            setOutputProperty(OutputKeys.METHOD, "xml")
-            setOutputProperty(OutputKeys.ENCODING, "UTF-8")
-            setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4")
-        }} catch (e: ParserConfigurationException) {
+        try {
+            tr.apply{
+                setOutputProperty(OutputKeys.INDENT, "yes")
+                setOutputProperty(OutputKeys.METHOD, "xml")
+                setOutputProperty(OutputKeys.ENCODING, "UTF-8")
+                setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4")
+            }
+        } catch (e: ParserConfigurationException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
         } catch (e: TransformerConfigurationException) {
@@ -61,8 +63,7 @@ open class BaseXMLReader : XMLReader {
             e.printStackTrace()
             throw FileNotFoundException("Could not find specified file")
         } catch (e: SAXException) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace()
+            log.error("XML reader was unable to open file: $pathName")
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: ParserConfigurationException) {

@@ -12,6 +12,7 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("C:/Users/spartak/Documents/Programming/libraries")
 }
 
 kotlin {
@@ -41,6 +42,8 @@ kotlin {
 
                 // RSS Feed Reader
                 implementation("com.rometools:rome:1.18.0")
+
+                implementation("com.spartanlabs:WebTools:1.1.1")
             }
         }
         val jvmTest by getting
