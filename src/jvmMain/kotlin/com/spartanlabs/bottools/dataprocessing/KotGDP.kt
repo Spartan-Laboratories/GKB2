@@ -1,6 +1,9 @@
 package com.spartanlabs.bottools.dataprocessing
 
-import com.spartanlabs.bottools.main.*
+import com.spartanlabs.bottools.main.Bot
+import com.spartanlabs.bottools.main.newGuildJoinAction
+import com.spartanlabs.bottools.main.newGuildMemberJoinAction
+import com.spartanlabs.bottools.main.newGuildUpdateNameAction
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.guild.update.GuildUpdateNameEvent

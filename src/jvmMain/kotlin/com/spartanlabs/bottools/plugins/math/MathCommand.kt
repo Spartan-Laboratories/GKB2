@@ -23,7 +23,7 @@ class MathCommand() : Command("math") {
 
     override fun invoke(args: Array<String>){
         try {
-            reply(solve(concatArgs(args).replace(" ", "").lowercase()).toString())
+            `reply with`(solve(concatArgs(args).replace(" ", "").lowercase()).toString())
         } catch (e: Exception) {
             say("The problem was not formed correctly.\n" + e.message)
             e.printStackTrace()

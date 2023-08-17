@@ -1,17 +1,21 @@
 package com.spartanlabs.bottools.commands
 
-import com.spartanlabs.bottools.botactions.*
+import com.spartanlabs.bottools.botactions.contains
+import com.spartanlabs.bottools.botactions.say
+import com.spartanlabs.bottools.botactions.send
+import com.spartanlabs.bottools.botactions.show
 import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.main.Parser
 import com.spartanlabs.bottools.main.Parser.CommandContainer
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
@@ -50,7 +54,7 @@ import kotlin.collections.set
  */
 abstract class Command protected constructor(val name: String) {
     /*--------------I AM--------------------------------*/
-
+    lateinit var newBrief: String
     protected abstract val brief : String
     protected abstract val details: String
     protected open val detailStatement = ""
@@ -63,6 +67,15 @@ abstract class Command protected constructor(val name: String) {
     /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
     /*---------EVENT INFORMATION------------------------*/
+    var event: Event? = null
+        internal set(value) {
+            when (value) {
+                is MessageReceivedEvent -> set(value)
+                is GenericCommandInteractionEvent -> pullInteractionData(value)
+            }
+            field = value
+        }
+    open var messageEvent: MessageReceivedEvent? = null
     open lateinit var guild: Guild
     open lateinit var channel: MessageChannel
     open lateinit var message: Message
@@ -95,11 +108,6 @@ abstract class Command protected constructor(val name: String) {
     private val invalidSCErrMsg = " is not a valid sub-command."
 
     protected lateinit var slashCommandData: SlashCommandData
-
-    /**
-     * The message event that contains the message that triggered this command
-     */
-    var messageEvent: MessageReceivedEvent? = null
     protected var deferredReply: ReplyCallbackAction? = null
     var scEvent: SlashCommandInteractionEvent? = null
     val get     by lazy { this + "get" }
@@ -124,7 +132,7 @@ abstract class Command protected constructor(val name: String) {
      * @param event - the event of the message that triggered this command
      * @return The [Command] whose event is being set
      */
-    fun setEvent(event: MessageReceivedEvent): Command = this.also{
+    private fun set(event: MessageReceivedEvent): Command = this.also{
         messageEvent = event
         guild = event.guild
         member = event.member!!
@@ -133,11 +141,33 @@ abstract class Command protected constructor(val name: String) {
         message = event.message
         tagged = message.mentions.members
     }
+    internal infix fun set(event:Event):Command = this.apply{
+        this.event = event
+    }
+    open operator fun invoke(){
+        when(event){
+            is MessageReceivedEvent             -> this(Parser parse event as MessageReceivedEvent)
+            is GenericCommandInteractionEvent   -> with(event as GenericCommandInteractionEvent){
+                reply = deferReply()
+                this@Command(this)
+            }
+        }
+    }
+    operator fun invoke(interaction: GenericCommandInteractionEvent) = when(interaction){
+        is MessageContextInteractionEvent, is UserContextInteractionEvent   ->
+            this(Parser parse "/$name")
+        is SlashCommandInteractionEvent                                     -> {
+            log.info("Reaction to slash command interaction by ${interaction.member}")
+            scEvent = interaction
+            this(Parser parse interaction)
+        }
+        else                                                                -> null
+    }
 
     /**
      * Makes the bot send the automatically generated help message in the text channel that the command was received in.
      */
-    protected fun help() = this say helpMessage!!
+    protected fun help() = this say helpMessage
 
     fun help(subcommand: Array<String>) {
         if (subcommand.size == 0) help() else getSubCommand(subcommand[0])!!.help(getSecondaryArgs(subcommand))
@@ -210,11 +240,9 @@ abstract class Command protected constructor(val name: String) {
 
     protected fun validateSubCommand(args: Array<String>): Boolean = isValidSubCommand(args[0])
 
-    protected fun quickEmbed(title: String?, description: String) {
-        var description = description
-        eb!!.setAuthor(title)
-        if (description.length > 2048) description = description.substring(0, 2048)
-        eb!!.setDescription(description)
+    protected fun quickEmbed(title: String?, description: String) = eb.apply {
+        setAuthor(title)
+        setDescription(with(description){if(length>emdl)substring(0,emdl);this})
     }
 
     protected fun sendEmbed(channel: MessageChannel = this.channel, filePath: String = "") {
@@ -224,11 +252,7 @@ abstract class Command protected constructor(val name: String) {
         resetEmbedBuilder()
     }
 
-    protected fun sendEmbed(channelList: Collection<MessageChannel>) {
-        channelList.forEach{ sendEmbed(it) }
-        resetEmbedBuilder()
-    }
-    operator fun invoke(event : MessageReceivedEvent) = setEvent(event)(Parser.parse(event.message.contentRaw))
+    protected fun sendEmbed(channelList: Collection<MessageChannel>) = channelList.forEach{ sendEmbed(it) }.also{ resetEmbedBuilder() }
     open operator fun invoke(commandText: CommandContainer){
         args = commandText.args
         if (treatAsSubCommand(commandText)) {
@@ -245,40 +269,23 @@ abstract class Command protected constructor(val name: String) {
 
     open val commandData: CommandData
         get() = slashCommandData
-
-    operator fun invoke(interaction: Interaction) = pullInteractionData(interaction)
-
-    operator fun invoke(event: MessageContextInteractionEvent){
-        reply = event.deferReply()
-        this(event as Interaction)(Parser.parse("/" + name))
-    }
-    operator fun invoke(event: UserContextInteractionEvent){
-        reply = event.deferReply()
-        this(event as Interaction)(Parser.parse("/" + name))
-    }
-
-    operator fun invoke(event: SlashCommandInteractionEvent){
-        log.info("Reaction to slash command interaction by ${event.member}")
-        reply = event.deferReply()
-        scEvent = event
-        this(event as Interaction)(Parser.parse(event))
-    }
-
-    private fun pullInteractionData(event: Interaction): Command {
+    private fun pullInteractionData(event: GenericCommandInteractionEvent): Command {
         guild = event.guild!!
         member = event.member!!
         channel = event.messageChannel
-        user =
-            if (UserContextInteractionEvent::class.java.isAssignableFrom(event.javaClass)) (event as UserContextInteractionEvent).target else event.user
-        if (MessageContextInteractionEvent::class.java.isAssignableFrom(event.javaClass)) message =
-            (event as MessageContextInteractionEvent).target
+        user = when(event){
+            is UserContextInteractionEvent  -> event.target
+            else                            -> event.user
+        }
+        if (event is MessageContextInteractionEvent)
+            message = event.target
         return this
     }
 
     protected open val description: String?
         get() {
             return helpMessage.let{
-                if(it!!.length > 100)
+                if(it.length > 100)
                     it.substring(0, it.indexOf("\n"))
                 else it
             }
@@ -289,9 +296,9 @@ abstract class Command protected constructor(val name: String) {
     }
     open operator fun plus(option: Option) = addOption(option)
 
-    open infix fun reply(message: String) = if(reply != null)reply!!.setContent(message).complete()
-                                            else say(message)
-    protected infix fun replyWith(message: String) = reply(message)
+    open infix fun `reply with`(message: String) = reply?.setContent(message)?.complete() ?: say(message)
+
+    protected infix fun replyWith(message: String) = `reply with`(message)
     /*
     protected inner class SaveImageAction internal constructor(val url: String){
         infix fun to(fileName: String) = com.spartanlabs.generictools.saveImage(url, fileName)
@@ -329,16 +336,22 @@ abstract class Command protected constructor(val name: String) {
 
     private val finalEmbed: MessageEmbed
         get() {
-            if (eb.build().footer == null || eb.build().footer!!.text == "")
-                eb.setFooter(Bot.jda!!.selfUser.name);
+            if(eb.build().footer.let{it == null || it.text == ""})
+                eb.setFooter(Bot.jda!!.selfUser.name)
             return eb.setTimestamp(Instant.now()).build()
         }
 
     open fun getOption(optionName: String): OptionMapping? = scEvent!!.getOption(optionName)
 
     companion object {
-        @JvmStatic
-        protected val log = LoggerFactory.getLogger(this::class.java)
+        @JvmStatic protected val log = LoggerFactory.getLogger(this::class.java)
+        @JvmStatic protected val error  :(String)->Unit = log::error
+        @JvmStatic protected val warn   :(String)->Unit = log::warn
+        @JvmStatic protected val info   :(String)->Unit = log::info
+        @JvmStatic protected val debug  :(String)->Unit = log::debug
+        @JvmStatic protected val trace  :(String)->Unit = log::trace
+        private const val embedMaximumDescriptionLength = 2048
+        private const val emdl = embedMaximumDescriptionLength
         /**
          *
          * @param args the String[] that is to be converted to a String
@@ -360,4 +373,8 @@ abstract class Command protected constructor(val name: String) {
             return newArgs
         }
     }
+    protected operator fun ReplyCallbackAction.compareTo(message: String)   = 0.also{this@Command `reply with` message}
+    protected operator fun MessageChannel.compareTo(message: String)        = 0.also{Bot say message in this}
+    protected operator fun MessageChannel.compareTo(embed:MessageEmbed)     = 0.also{sendMessageEmbeds(embed).complete()}
+    protected operator fun MessageChannel.compareTo(file:File)              = 0.also{Bot send file in this}
 }

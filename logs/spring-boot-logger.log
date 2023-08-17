@@ -1,19 +1,2 @@
-2023-08-11 18:50:01,788 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Begun bot initialization
-2023-08-11 18:50:01,790 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Uptime thread created
-2023-08-11 18:50:01,807 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Console created
-2023-08-11 18:50:01,808 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Starting JDA creation
-2023-08-11 18:50:01,808 INFO c.s.b.m.Console [Thread-4] The console is active
-2023-08-11 18:50:01,813 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Successfully read bot key.
-Starting jda building.
-2023-08-11 18:50:08,320 INFO c.s.b.m.Responder [ForkJoinPool.commonPool-worker-1] Created Responder
-2023-08-11 18:50:09,216 INFO n.d.j.a.JDA [ForkJoinPool.commonPool-worker-1] Login Successful!
-2023-08-11 18:50:09,485 INFO n.d.j.i.r.WebSocketClient [JDA MainWS-ReadThread] Connected to WebSocket
-2023-08-11 18:50:09,881 INFO n.d.j.a.JDA [JDA MainWS-ReadThread] Finished Loading!
-2023-08-11 18:50:09,944 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Completed JDA creation
-2023-08-11 18:50:09,995 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] The default interaction responses have been created
-2023-08-11 18:50:10,295 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] The server database has been updated
-2023-08-11 18:50:10,365 INFO c.s.b.m.Bot [ForkJoinPool.commonPool-worker-1] Help command has been created
-2023-08-11 18:50:10,650 INFO c.s.w.Connector [ForkJoinPool.commonPool-worker-1] Connector was created successfully
-2023-08-11 18:50:11,496 INFO c.s.b.c.Command$Companion [ForkJoinPool.commonPool-worker-1] The command dota2 successfully validated connection
-2023-08-11 18:51:52,449 INFO c.s.b.c.Command$Companion [JDA MainWS-ReadThread] Reaction to slash command interaction by Member:the_florida_man_(id=249876383474384897, user=User:the_florida_man_(id=249876383474384897), guild=Guild:Make Discord Great Again(id=252288236267765761))
-2023-08-11 18:52:15,062 INFO c.s.b.c.Command$Companion [JDA MainWS-ReadThread] Reaction to slash command interaction by Member:the_florida_man_(id=249876383474384897, user=User:the_florida_man_(id=249876383474384897), guild=Guild:Make Discord Great Again(id=252288236267765761))
+2023-08-17 00:03:39,447 INFO c.s.b.c.Command$Companion [JDA MainWS-ReadThread] starting help command initialization
+2023-08-17 00:03:39,655 INFO c.s.b.c.Command$Companion [JDA MainWS-ReadThread] Reaction to slash command interaction by Member:the_florida_man_(id=249876383474384897, user=User:the_florida_man_(id=249876383474384897), guild=Guild:Make Discord Great Again(id=252288236267765761))

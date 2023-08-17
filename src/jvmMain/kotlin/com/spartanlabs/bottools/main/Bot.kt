@@ -2,13 +2,14 @@ package com.spartanlabs.bottools.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.spartanlabs.bottools.botactions.contains
+import com.spartanlabs.bottools.botactions.say
 import com.spartanlabs.bottools.commands.Command
+import com.spartanlabs.bottools.commands.CommandFactory
 import com.spartanlabs.bottools.commands.HelpCommand
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.main.Parser.CommandContainer
-import com.spartanlabs.bottools.botactions.contains
-import com.spartanlabs.bottools.botactions.say
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -30,9 +31,12 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.function.Predicate
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 private val formatter = DateTimeFormatter.ofPattern("hh:mm:ss", Locale.getDefault())
 private var log = LoggerFactory.getLogger(Bot::class.java)
+@OptIn(ExperimentalTime::class)
 abstract class Bot(var tokenState: MutableState<Boolean>){
     var centralProcess: CentralProcess?
     val formattedUptime = mutableStateOf("00:000")
@@ -67,8 +71,8 @@ abstract class Bot(var tokenState: MutableState<Boolean>){
         log.info("Console created")
 
         // Bot setup
-        initializeBotExistence()
-        addInteractionResponses()
+        reportTime("initialization", ::initializeBotExistence)
+        reportTime("interacation setup", ::addInteractionResponses)
         Parser addTrigger "/"
 
         // My Systems again
@@ -76,8 +80,6 @@ abstract class Bot(var tokenState: MutableState<Boolean>){
         log.info("The server database has been updated")
 
         //Commands
-        createCommand(HelpCommand())
-        log.info("Help command has been created")
         listCommands()
         log.info("All commands have been created")
         createAllSlashCommands()
@@ -199,7 +201,7 @@ abstract class Bot(var tokenState: MutableState<Boolean>){
             val channel = event.channel
             if (commands.containsKey(commandName)) {
                 try {
-                    commands[commandName]!!.setEvent(event).invoke(commandText)
+                    commands[commandName]!!.set(event).invoke(commandText)
                 } catch (ipe: InsufficientPermissionException) {
                     ipe.printStackTrace()
                     Bot say "Insufficient permissions to perform this command" in channel
@@ -222,7 +224,7 @@ abstract class Bot(var tokenState: MutableState<Boolean>){
             if (Parser `starts with trigger` event.message.contentRaw)
                 handleCommand(Parser parse event, event)
         }
-        private infix fun handleCommand(event: SlashCommandInteractionEvent) = commands[event.name]!!(event)
+        private infix fun handleCommand(event: SlashCommandInteractionEvent) = CommandFactory.getCommand(event)()//commands[event.name]!!(event)
 
         private infix fun handleCommand(event: UserContextInteractionEvent) = commands[event.name]!!(event)
 
@@ -245,3 +247,5 @@ fun <T>evaluateList(list:Iterable<T>, validator: Predicate<T>):Boolean{
     for(t in list)if(validator.test(t))return true
     return false
 }
+@OptIn(ExperimentalTime::class)
+fun reportTime(nameOfAction:String, action:()->Unit) = log.info("$nameOfAction took ${measureTime(action).inWholeMilliseconds}")

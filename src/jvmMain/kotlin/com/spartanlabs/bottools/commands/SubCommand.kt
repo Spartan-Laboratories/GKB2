@@ -64,6 +64,6 @@ abstract class SubCommand(name: String, protected val parent: Command) : Command
         }
     }
 
-    override infix fun reply(message: String) = parentCommand reply message
+    override infix fun `reply with`(message: String) = parentCommand `reply with` message
     override operator fun plus(option:Option) = super.plus(option) as SubCommand
 }

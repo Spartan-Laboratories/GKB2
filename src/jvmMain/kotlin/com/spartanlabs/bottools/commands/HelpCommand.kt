@@ -9,15 +9,14 @@ class HelpCommand : Command("help") {
     override val brief = "See what this bot can do"
     override val details = "Gives a detailed description of this Bot's capabilities"
     init {
-        println("starting help command initialization")
-        //brief = "See what this bot can do"
+        info("starting help command initialization")
         makeInteractive()
         slashCommandData.addOption(OptionType.STRING, "commandname", "the name of the command that you need help with", false)
         //+ Option(name = "command name", description = "the name of the command which you need help with", required = true)
     }
 
     public override fun invoke(args: Array<String>){
-        reply("Hello, I am " + jda.selfUser.name)
+        reply!!>"Hello, I am ${jda.selfUser.name}"
         if (args.isEmpty()) executeGenericVersion()
         else executeCommandNameVersion(args)
     }

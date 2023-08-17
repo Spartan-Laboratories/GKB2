@@ -29,7 +29,7 @@ class AddReactionRole : Command("addreactionrole") {
         val creationMessage = "A reaction role has been created for the guild ${guild.banner}." +
                 " Emote ${emote.asMention} is now tied to the role: ${role.asMention}"
         log.info(creationMessage)
-        reply(creationMessage)
+        `reply with`(creationMessage)
         ReactionRoleActions.updateMessages(guild, emote)
     }
     private fun invalidEmoteMessage(): Emoji? = null.also{

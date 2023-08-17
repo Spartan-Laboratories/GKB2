@@ -51,7 +51,7 @@ abstract class GameStatsCommand
                 tagline = tagSymbol + tagline   //then add tag symbol to the beginning of it
             val fullTag = args[0] + (tagline ?: "")
             user_ID = fullTag
-            reply("The $gameName ID of ${targetMember!!.effectiveName} has been set to $fullTag")
+            `reply with`("The $gameName ID of ${targetMember!!.effectiveName} has been set to $fullTag")
         }
     }
 
@@ -64,7 +64,7 @@ abstract class GameStatsCommand
 
         override operator fun invoke(args: Array<String>){
             if(user_ID.isNullOrBlank())  sendNoIDMessage()
-            else                        reply("The in-game ID of " + (targetMember!!.user.name) + " is " + user_ID)
+            else                        `reply with`("The in-game ID of " + (targetMember!!.user.name) + " is " + user_ID)
         }
     }
     /**
@@ -91,12 +91,12 @@ abstract class GameStatsCommand
             set(value)  = dataPoint/endPoint+value!!
     }
 
-    protected fun sendNoIDMessage() = reply("This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID")
+    protected fun sendNoIDMessage() = `reply with`("This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID")
     var ss : (Array<String>) -> Unit = {}
     protected open fun showStats(args: Array<String>){}
     private fun manualLastGame(args: Array<String>){
         require(user_ID != null){
-            reply("Could not get the last game that this user has played because their id has not been set.")
+            `reply with`("Could not get the last game that this user has played because their id has not been set.")
             return
         }
         lastGame(args = arrayOf(), auto = false)

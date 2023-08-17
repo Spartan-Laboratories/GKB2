@@ -1,18 +1,17 @@
 
-import com.spartanlabs.bottools.botactions.*
+import com.spartanlabs.bottools.botactions.contains
+import com.spartanlabs.bottools.botactions.send
 import com.spartanlabs.bottools.commands.GameStatsCommand
-import com.spartanlabs.bottools.commands.MethodCommand
 import com.spartanlabs.bottools.commands.Option
 import com.spartanlabs.bottools.commands.SubCommand
 import com.spartanlabs.bottools.dataprocessing.BaseXMLReader
 import com.spartanlabs.bottools.dataprocessing.children
 import com.spartanlabs.bottools.dataprocessing.getChild
 import com.spartanlabs.bottools.main.Bot
-import com.spartanlabs.generaltools.cropImage
 import com.spartanlabs.generaltools.capitalizeEveryWord
-import com.spartanlabs.webtools.to
+import com.spartanlabs.generaltools.cropImage
 import com.spartanlabs.webtools.WebViewer
-
+import com.spartanlabs.webtools.to
 
 
 class PalOfExile() : GameStatsCommand("poe") {
@@ -55,7 +54,7 @@ class PalOfExile() : GameStatsCommand("poe") {
         }
         override fun invoke(args:Array<String>){
             val itemName = getOption(optionName)!!.asString
-            reply("Looking up the item: $itemName from the category: $name")
+            `reply with`("Looking up the item: $itemName from the category: $name")
             val inSiteName = itemName.replace(" ","-")
             val url = "https://poe.ninja/challenge/$ninjaName/$inSiteName"
             val screenshot = WebViewer() screenshot url
@@ -67,10 +66,10 @@ class PalOfExile() : GameStatsCommand("poe") {
 
     private fun wikiItem(itemName:Array<String>){
         val itemName = getOption("itemname")?.asString?.capitalizeEveryWord()?.replace(' ','_')
-        if(itemName.isNullOrBlank())reply("Could not find the specified item")
+        if(itemName.isNullOrBlank())`reply with`("Could not find the specified item")
         val address = "https://www.poewiki.net/wiki/$itemName"
         open(address){
-            reply(data)
+            `reply with`(data)
         }
     }
     private fun getCurrencyNames() = acquireFromWiki("Currency#Basic_currency",::basicCurrency)

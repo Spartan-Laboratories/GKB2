@@ -11,13 +11,11 @@ class RssService protected constructor(serviceName: String?) : CheckValueService
         prepAddress()
         SyndFeedInput().build(XmlReader(URL(address)))
     }
-
     override operator fun invoke() {
         println("Testing rss feed service")
         data = feed!!.entries[0].uri
         checkValues(packet.oldValue)
     }
-
     companion object {
         fun createService(serviceName: String, onChange: TriggerAction, interval: Int) =
             createService(RssService(serviceName), onChange, interval)

@@ -28,7 +28,7 @@ class SingleChannelListener(protected var channel: MessageChannel, protected var
                 if (commandInfo.commandName == command.name) commandInfo.args else commandInfo.beheaded.split(" ".toRegex())
                     .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
-            command.setEvent(event).invoke(commandInfo)
+            command.set(event).invoke(commandInfo)
         }
     }
 

@@ -12,6 +12,7 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://repo.spring.io/snapshot")
     maven("C:/Users/spartak/Documents/Programming/libraries")
 }
 
@@ -29,7 +30,7 @@ kotlin {
                 api("ch.qos.logback:logback-classic:1.3.0-alpha13")
 
                 //PRIMARY LIB
-                api("net.dv8tion:JDA:5.0.0-beta.2")
+                implementation("net.dv8tion:JDA:5.0.0-beta.2")
 
                 //Webscraping:
                 //implementation("it.skrape:skrapeit:0-SNAPSHOT"){isChanging = true}
@@ -37,8 +38,12 @@ kotlin {
                 implementation("org.jsoup:jsoup:1.15.4")
                 implementation("com.mashape.unirest:unirest-java:1.4.9")// https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
 
-                // Responder class reader
-                implementation("org.springframework:spring-context:5.3.23")
+                /*
+                    Spring framework is needed for spring-based dependency injection of commands
+                 */
+                // Responder class reader is also spring based
+                implementation("org.springframework:spring-context:5.3.29")
+                //implementation("org.springframework:spring-context:6.1.0-SNAPSHOT")
 
                 // RSS Feed Reader
                 implementation("com.rometools:rome:1.18.0")

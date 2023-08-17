@@ -25,10 +25,10 @@ open class PropertyCommand(private val property:KMutableProperty<String?>, paren
         parent.set + orgData(propertyName, "set$propertyName")
     }
     private fun reply(message:Array<String>){
-        reply(value?:"")
+        `reply with`(value?:"")
     }
     private fun write(value:Array<String>){
-        reply("$propertyName has been set to: ${value[0]}")
+        `reply with`("$propertyName has been set to: ${value[0]}")
         this.value = value[0]
     }
 }

@@ -38,7 +38,7 @@ abstract class CheckValueService protected constructor(private val packetName: S
     }
 
     override operator fun invoke(args: Array<String>) {}
-    protected abstract operator fun invoke()
+    //protected abstract operator fun invoke()
 
     override fun run() {
         initialSleep()

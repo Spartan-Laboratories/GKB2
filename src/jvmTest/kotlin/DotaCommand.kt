@@ -1,8 +1,8 @@
+import com.spartanlabs.bottools.botactions.contains
 import com.spartanlabs.bottools.botactions.online.save
+import com.spartanlabs.bottools.botactions.say
 import com.spartanlabs.bottools.commands.GameStatsCommand
 import com.spartanlabs.bottools.main.Bot
-import com.spartanlabs.bottools.botactions.contains
-import com.spartanlabs.bottools.botactions.say
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -26,7 +26,7 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
 
 
     override fun postPatchNotes(value: Array<String>){
-        println("post patch notes test proc")
+        debug("post patch notes test proc")
         data = connectViaSkrape(patchNoteURL)
         mapValueByKey("dota2patchnotes")
         com.spartanlabs.bottools.botactions.tts(
