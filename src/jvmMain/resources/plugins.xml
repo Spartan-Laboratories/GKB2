@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "C:/Users/spartak/Documents/Programming/libraries/spring-beans-2.0.dtd">
+<beans>
+    <bean id="math" class="com.spartanlabs.bottools.plugins.math.MathCommand" parent="plugincommand"/>
+    <bean id="poker" class="com.spartanlabs.bottools.plugins.poker.PokerCommand" parent="plugincommand"/>
+    <bean id="plugincommand" class="com.spartanlabs.bottools.commands.Command" abstract="true">
+        <property name="active" value="false"/>
+    </bean>
+</beans>

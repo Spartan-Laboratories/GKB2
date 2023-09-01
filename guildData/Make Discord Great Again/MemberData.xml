@@ -2062,4 +2062,18 @@
             <dstend>none</dstend>
         </time>
     </Person>
+<Person>
+        <tName>humanproxy26</tName>
+        <keyid/>
+        <nPoints>0.0</nPoints>
+        <requestedby>none</requestedby>
+        <money>1000</money>
+        <Games/>
+        <time>
+            <timezone>none</timezone>
+            <dston>false</dston>
+            <dststart>none</dststart>
+            <dstend>none</dstend>
+        </time>
+    </Person>
 </People>

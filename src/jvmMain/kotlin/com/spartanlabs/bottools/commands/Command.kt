@@ -21,21 +21,18 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
+import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
+import kotlin.properties.Delegates
 
-/**
- * The command superclass that all command subclasses inherit from. When creating a new command subclass it must
+/***
+ * The command superclass that all command subclasses inherit from.
  *
- *  * **extend** this class
- *  *  implement the [.execute] method
- *  *  have a constructor that calls **super()** and sets the command name using [.setCommandName] as well as adds any possible
- * aliases using [.addAlias]
- *
- * <h6>Use:</h6><br>
+ * <h6>Example:</h6><br>
  * <code>CommandName **extends** Command{
  * **public** CommandName(){
  * **super**();
@@ -51,9 +48,11 @@ import kotlin.collections.set
  * <br></br>
  *
  * @author spartak
- */
+ ***/
 abstract class Command protected constructor(val name: String) {
     /*--------------I AM--------------------------------*/
+    @set:JvmName("setActive")
+    var active = true
     lateinit var newBrief: String
     protected abstract val brief : String
     protected abstract val details: String
@@ -90,7 +89,7 @@ abstract class Command protected constructor(val name: String) {
             } ?: member
         }
     /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-    protected var jda = Bot.jda!!
+    protected var jda = Bot.jda
     protected val guilds
         get() = jda.guilds
     protected var terminalArg = 0
@@ -316,18 +315,18 @@ abstract class Command protected constructor(val name: String) {
     open infix fun addToSlashCommandData(subcommandGroup: SubcommandGroupData)          = slashCommandData.addSubcommandGroups(subcommandGroup)
     protected open infix fun addToSlashCommandData(optionData: OptionData)              = slashCommandData.addOptions(optionData)
     protected open infix operator fun plus(name: String) = OrganizationCommand(name, this)
-    protected fun resetChannel(): MessageChannel =
-        (if (messageEvent != null) messageEvent!!.channel else scEvent!!.messageChannel).
-        also {channel = it}
-    protected fun resetMember(): Member =
-        if (messageEvent != null) messageEvent!!.member!! else scEvent!!.member!!.
-        also { member = it }
-    protected fun resetGuild(): Guild =
-        if (messageEvent != null) messageEvent!!.guild else scEvent!!.guild.
-        also { guild = it!! }!!
-    protected fun resetMessage(): Message =
-        messageEvent!!.message.
-        also { message = it }
+    protected fun resetChannel(): MessageChannel = channel.apply {
+        channel = messageEvent?.channel ?: scEvent!!.messageChannel
+    }
+    protected fun resetMember(): Member = member.apply {
+        member = (messageEvent?.member ?: scEvent!!.member)!!
+    }
+    protected fun resetGuild(): Guild = guild.apply {
+        guild = (messageEvent?.guild ?: scEvent!!.guild)!!
+    }
+    protected fun resetMessage(): Message = message.also{
+        message = messageEvent!!.message
+    }
 
     protected infix fun tts(message: String): Message = com.spartanlabs.bottools.botactions.tts(channel, message)
     protected fun replyWithEmbed() = reply!!.addEmbeds(finalEmbed).complete()

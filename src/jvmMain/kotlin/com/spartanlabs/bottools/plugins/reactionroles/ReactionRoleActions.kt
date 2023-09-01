@@ -1,5 +1,8 @@
 package com.spartanlabs.bottools.plugins.reactionroles
 
+import com.spartanlabs.bottools.botactions.addReactionToMessage
+import com.spartanlabs.bottools.botactions.say
+import com.spartanlabs.bottools.botactions.to
 import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.dataprocessing.minus
 import com.spartanlabs.bottools.main.Bot
@@ -29,16 +32,14 @@ object ReactionRoleActions {
         }
 
     fun createWelcomeMessage(guild: Guild, channel: MessageChannel) {
-        (D/guild-"welcomeMessage").let {
-            com.spartanlabs.bottools.botactions.say(channel, it).let {
-                setGuildWelcomeMessageID(it)
-                addGameEmotes(it)
-            }
+        (Bot say D/guild-"welcomeMessage" to channel).let {
+            setGuildWelcomeMessageID(it)
+            addGameEmotes(it)
         }
     }
 
     private fun setGuildWelcomeMessageID(message: Message) {
-        with(D/message.guild/"welcomeMessages" create "welcomeMessage") {
+        (D/message.guild/"welcomeMessages" create "welcomeMessage").apply {
             this/"channel" + message.channel.id
             this/"id" + message.id
         }
@@ -46,7 +47,7 @@ object ReactionRoleActions {
 
     private fun addGameEmotes(welcomeMessage: Message) =
         getEmoteList(welcomeMessage.guild).forEach{
-            com.spartanlabs.bottools.botactions.addReactionToMessage(it!!, welcomeMessage)
+            addReactionToMessage(it!!, welcomeMessage)
         }
     private fun getEmoteList(guild: Guild) = (D/guild/"reactionRoles").readAll().map { it-"emote"}.map(guild::getEmojiById)
     private fun getCorrespondingRole(guild: Guild, emote: Emoji) : Role?{
@@ -62,7 +63,7 @@ object ReactionRoleActions {
         }
     fun updateMessages(guild: Guild, emote: Emoji) = with(getGuildWelcomeMessages(guild)) {
         if (isNotEmpty())forEach{
-            com.spartanlabs.bottools.botactions.addReactionToMessage(emote, it)
+            addReactionToMessage(emote, it)
         }
     }
 }

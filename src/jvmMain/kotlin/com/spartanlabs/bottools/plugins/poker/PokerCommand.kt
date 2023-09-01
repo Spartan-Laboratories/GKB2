@@ -15,6 +15,6 @@ class PokerCommand() : Command("poker") {
     init {
         MethodCommand(this,"createtable", "creates a new table for people to play at"){
             (channel as TextChannel).parentCategory!!.createTextChannel(getOption("table name")?.asString?:"table1")
-        } + Option("string", "table name", "name the table you are creating",false)
+        } + Option("string", "tablename", "name the table you are creating",false)
     }
 }

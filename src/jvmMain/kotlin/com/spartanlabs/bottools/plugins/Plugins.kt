@@ -11,36 +11,38 @@ import com.spartanlabs.bottools.plugins.poker.PokerCommand
 import com.spartanlabs.bottools.plugins.reactionroles.AddReactionRole
 import com.spartanlabs.bottools.plugins.reactionroles.CreateMainWelcomeMessage
 import com.spartanlabs.bottools.plugins.reactionroles.ReactionRoleActions
+import com.spartanlabs.generaltools.evaluateList
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-private fun Bot.Companion.createSingleCommandPlugin(command:Command):Bot.Companion.()->Unit = {
-    Bot createCommand command
-}
-class Plugin(val fn:Bot.Companion.()->Unit = { }){
-    constructor(command: Command):this(){
-        Bot.Companion createCommand command
-    }
-    operator fun invoke() = fn?.invoke(Bot)
 
+class Plugin(val fn:Bot.Companion.()->Collection<Command>){
+    operator fun invoke():Collection<Command> = fn.invoke(Bot)
 }
 
 
 object Plugins {
+    operator fun get(pluginName:String):Plugin? = when(pluginName){
+        "reactionroles" -> `REACTION ROLES`
+        "math"          -> Math
+        "poker"         -> Poker
+        "spamcontrol"   -> SpamControl
+        else            -> null
+    }
     val `REACTION ROLES` = Plugin {
         D.addTagFile("src/jvmMain/resources/ReactionRoles.xml")
-        createCommand(AddReactionRole())
-        createCommand(CreateMainWelcomeMessage())
         responder newMessageReactionAddAction  ReactionRoleActions::giveReactionRole
         responder newMessageDeleteAction       ReactionRoleActions::removeDeletedWelcomeMessage
+        return@Plugin listOf(AddReactionRole(),CreateMainWelcomeMessage())
     }
     val Math = Plugin{
-        Bot createCommand MathCommand()
+        return@Plugin listOf(MathCommand())
     }
     val Poker = Plugin{
-        Bot createCommand PokerCommand()
+        return@Plugin listOf(PokerCommand())
     }
     val SpamControl = Plugin{
         responder newMessageReceivedAction ::isSpam
+        return@Plugin listOf()
     }
 
     private fun isSpam(event: MessageReceivedEvent): Boolean {
@@ -50,7 +52,6 @@ object Plugins {
         history.retrievePast(spamThreshold).complete()
         val retrievedMessages = history.retrievedHistory
         if (retrievedMessages.size > spamThreshold) return false
-        for (i in 1 until spamThreshold) if (retrievedMessages[i].contentRaw != event.message.contentRaw) return false
-        return true
+        return evaluateList(retrievedMessages){it.contentRaw == event.message.contentRaw}
     }
 }

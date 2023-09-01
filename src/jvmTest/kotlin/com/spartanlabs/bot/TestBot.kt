@@ -1,4 +1,4 @@
-
+package com.spartanlabs.bot
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,65 +17,90 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.spartanlabs.bottools.main.Bot
-import com.spartanlabs.bottools.plugins.Plugins
+import com.spartanlabs.bottools.manager.start
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture.runAsync
 
-
+/*
 fun main() = application{
     //Window(onCloseRequest=::exitApplication){}
     Window(onCloseRequest = ::exitApplication, title = "Trump Bot"){
         BotUI()
     }
 }
+
+ */
+fun main() {
+    val bot = lazy {
+        KotBot()
+    }
+    start(bot)
+}
+val log = LoggerFactory.getLogger("UI")
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 private fun BotUI(){
+    var statusText by remember{mutableStateOf("Not started")}
     var initializerText by remember{mutableStateOf("Start!")}
-    var statusText      by remember{mutableStateOf("Not started")}
-    var botStarted      by remember{ mutableStateOf(false) }
-    var readyToken: Boolean = false
     var readyTokenState = remember{mutableStateOf(false)}
-    var bot by remember{ mutableStateOf(lazy{KotBot(readyTokenState)})}
-    MaterialTheme {Row {
-        Column {
+    //var bot by remember{ mutableStateOf(lazy{ KotBot(readyTokenState) })}
+    //var eventsText by remember{ mutableStateOf(lazy { bot.value.eventsText }) }
+    MaterialTheme {
+        Column(Modifier.fillMaxSize()) {
             Text(statusText)
-            //Spacer(modifier = Modifier.height(10.dp))
-            Button(
-                onClick = {
-                    statusText = "Please wait, initializing!"
-                    initializerText = statusText
-                    runAsync{
-                        bot.value
-                    }
-                    botStarted = true
-                },
-                modifier = Modifier.height(60.dp).width(250.dp)
-            ) {
-                Column {
-                    Text(
-                        text = initializerText,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight(10),
-                        modifier = Modifier.fillMaxSize().weight(2F).align(Alignment.CenterHorizontally),
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        "note: application will lag on start",
-                        fontSize = TextUnit(12F, TextUnitType.Sp),
-                        fontWeight = FontWeight(1),
-                        modifier = Modifier.fillMaxSize().weight(1F)
-                    )
-                }
-
-            }
+            Spacer(modifier = Modifier.height(10.dp))
+            //StartButton(Modifier.align(Alignment.CenterHorizontally))
         }
         Spacer(Modifier.width(1.dp))
         if (readyTokenState.value){
             Thread.sleep(1000L)
-            stateField(bot.value)
+            //val bot = bot.value
+            //stateField(bot)
+            //EventsBox(bot)
         }
-    }}
+    }
 }
+/*
+@OptIn(ExperimentalUnitApi::class)
+@Composable
+private fun StartButton(modifier: Modifier) {
+    Button(
+        onClick = {
+            statusText = "Please wait, initializing!"
+            initializerText = statusText
+            runAsync{
+                bot.value
+            }
+            botStarted = true
+        },
+        modifier = modifier.height(60.dp).width(250.dp)
+    ) {
+        Column{
+            Text(
+                text = initializerText,
+                fontSize = 25.sp,
+                fontWeight = FontWeight(10),
+                modifier = Modifier.fillMaxSize().weight(2F).align(Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                "note: application will lag on start",
+                fontSize = TextUnit(12F, TextUnitType.Sp),
+                fontWeight = FontWeight(1),
+                modifier = Modifier.fillMaxSize().weight(1F)
+            )
+        }
+
+    }
+}
+@Composable
+private fun EventsBox(bot:Bot!){
+    Box(Modifier.fillMaxSize()){
+        Text(eventsText.value)
+    }
+}
+
+ */
 @Composable
 private fun stateField(bot:Bot){
     Column {
@@ -95,11 +120,15 @@ private fun commandsField(bot:Bot){
     if(commandNameListSize > 0)Box(
         modifier = Modifier.border(width = 5.dp, color = Color.Black, shape = RectangleShape),
     ) {
-        Text("Command name list size: $commandNameListSize")
-        LazyColumn (modifier = Modifier.fillMaxSize().padding(10.dp)){
-            items(commandNameListSize) { index ->
-                Text(index.toString())
-                commandField(commandNames[index])
+        Column(Modifier.padding(2.dp)){
+            Spacer(Modifier.height(2.dp))
+            Text("Command name list size: $commandNameListSize")
+            Spacer(Modifier.height(3.dp))
+            LazyColumn (modifier = Modifier.fillMaxSize().padding(10.dp)){
+                items(commandNameListSize) { index ->
+                    Text(index.toString())
+                    commandField(commandNames[index])
+                }
             }
         }
     }
@@ -125,15 +154,7 @@ private fun dateField(date:String){
     val date by remember { mutableStateOf(date) }
     Text(date)
 }
-class KotBot(tokenState:MutableState<Boolean>) : Bot(tokenState) {
-    override fun listCommands() {
-        Plugins.`REACTION ROLES`()
-        Plugins.Math()
-        Bot createCommand DotaCommand()
-        Bot createCommand PalOfExile()
-        Plugins.Poker()
-    }
-
+class KotBot : Bot() {
     override fun applyDailyUpdate(currentDate: String?) {
     }
 

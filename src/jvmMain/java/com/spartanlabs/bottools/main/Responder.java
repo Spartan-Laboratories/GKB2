@@ -1,6 +1,8 @@
 package com.spartanlabs.bottools.main;
 
 import com.spartanlabs.bottools.main.EventAction.*;
+import com.spartanlabs.generaltools.MiscKt;
+import kotlin.Unit;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -29,9 +31,11 @@ public class Responder {
 	private HashMap<Class, List<EventAction>> actionMap = new HashMap<Class, List<EventAction>>();
 
 	Responder(){
+		log.info(MiscKt.profile("Responder creation",this::init));
+	}
+	private Unit init(){
 		getSubclasses(Event.class).forEach(subclass -> actionMap.put(subclass, new ArrayList<EventAction>()));
-		int x = 1;
-		log.info("Created Responder");
+		return Unit.INSTANCE;
 	}
 	
 	void actOn(Event event) {

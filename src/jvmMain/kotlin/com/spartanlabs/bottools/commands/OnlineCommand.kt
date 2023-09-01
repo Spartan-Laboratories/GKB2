@@ -5,7 +5,7 @@ import com.spartanlabs.bottools.botactions.online.readCookies
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.SourceKeyParser
 import com.spartanlabs.bottools.dataprocessing.minus
-import com.spartanlabs.bottools.main.evaluateList
+import com.spartanlabs.generaltools.evaluateList
 import it.skrape.fetcher.Cookie
 
 abstract class OnlineCommand
@@ -46,8 +46,8 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
         }
     private fun logCookieAcquisition(){}
     private fun stateCookies() = cookieList.readAll().map { (it - "name") to (it - "value") }.map{it.toString()}.forEach(log::info)
-    private fun testConnection() =  try{ connect();     log.info("The command $name successfully validated connection")}
-                                    catch(e:Exception){ log.info("The command $name could not successfully validate connection.")}
+    private fun testConnection() =  try  { connect();   log.info("The command $name successfully validated connection")}
+                                    catch(_:Exception){ log.info("The command $name could not successfully validate connection.")}
     protected fun cutToAfter(searchTerm: String) {
         data = cutToAfter(data, searchTerm)
     }
@@ -67,9 +67,9 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
         if (correctEntries.size == 0) true
         else evaluateList(correctEntries){
             when(it){
-                "digit" -> Character.isDigit(data[0]) || data[0] == '-'
-                "alphabetic" -> Character.isAlphabetic(data[0].code)
-                else -> data.startsWith(it)
+                "digit"     -> Character.isDigit(data[0]) || data[0] == '-'
+                "alphabetic"-> Character.isAlphabetic(data[0].code)
+                else        -> data.startsWith(it)
             }
         }
 

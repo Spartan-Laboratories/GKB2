@@ -1,5 +1,7 @@
+package com.spartanlabs.bot.commands
+
 import com.spartanlabs.bottools.botactions.contains
-import com.spartanlabs.bottools.botactions.online.save
+import com.spartanlabs.bottools.botactions.online.connector
 import com.spartanlabs.bottools.botactions.say
 import com.spartanlabs.bottools.commands.GameStatsCommand
 import com.spartanlabs.bottools.main.Bot
@@ -9,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-
+import com.spartanlabs.generaltools.to
 
 class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
     private val patchNoteURL = "https://steamdb.info/api/PatchnotesRSS/?appid=570"
@@ -129,7 +131,7 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
                     null
                 )
             }
-            ImageIO.write(itemline, "png", File("res/itemline.png"))
+            itemline to "res/itemline"
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -137,11 +139,10 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
 
     private fun getImages(): Int {
         for (i in 1..6) {
-            Bot save ("https://www.dotabuff.com${getValueFromKey("item image")}") to "res/img$i.png"
+            connector download ("https://www.dotabuff.com${getValueFromKey("item image")}") to "res/img$i"
             cutToAfter("</a></div></div>")
             if (!data.startsWith("<div class=\"match-item-with-time")) return i
         }
-
         return 6
     }
 }

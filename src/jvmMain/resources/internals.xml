@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "C:/Users/spartak/Documents/Programming/libraries/spring-beans-2.0.dtd">
+<beans>
+    <bean id="help" class="com.spartanlabs.bottools.commands.HelpCommand">
+        <property name="newBrief" value="See what this bot can do"/>
+    </bean>
+    <bean id="command" class="com.spartanlabs.bottools.commands.Command" abstract="true" scope="prototype"/>
+</beans>

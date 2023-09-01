@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.backend.wasm.lower.excludeDeclarationsFromCodegen
 
 plugins {
     kotlin("multiplatform")
@@ -25,11 +26,9 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                // BASICS
-                implementation(kotlin("test"))
-                api("ch.qos.logback:logback-classic:1.3.0-alpha13")
-
                 //PRIMARY LIB
+                implementation("com.spartanlabs:GeneralTools:1.0.12")
+                implementation("com.spartanlabs:WebTools:LATEST")
                 implementation("net.dv8tion:JDA:5.0.0-beta.2")
 
                 //Webscraping:
@@ -38,20 +37,22 @@ kotlin {
                 implementation("org.jsoup:jsoup:1.15.4")
                 implementation("com.mashape.unirest:unirest-java:1.4.9")// https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
 
-                /*
-                    Spring framework is needed for spring-based dependency injection of commands
+                /*  Spring framework is needed for spring-based dependency injection of commands
+                    Responder class reader is also spring based
                  */
-                // Responder class reader is also spring based
                 implementation("org.springframework:spring-context:5.3.29")
-                //implementation("org.springframework:spring-context:6.1.0-SNAPSHOT")
 
                 // RSS Feed Reader
                 implementation("com.rometools:rome:1.18.0")
 
-                implementation("com.spartanlabs:WebTools:1.1.1")
+                implementation(kotlin("reflect"))
             }
         }
-        val jvmTest by getting
+        val jvmTest by getting{
+            dependencies{
+                implementation(kotlin("test"))
+            }
+        }
     }
 }
 

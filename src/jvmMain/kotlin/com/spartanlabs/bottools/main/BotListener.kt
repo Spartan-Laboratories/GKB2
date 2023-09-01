@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 internal class BotListener : ListenerAdapter() {
     private final val log = LoggerFactory.getLogger(BotListener::class.java)
     private val ignoredChannels = ArrayList<MessageChannel>()
-    internal val responder:Responder = Responder()
+    internal val responder = Responder()
 
     fun ignoreChannel(channel: MessageChannel) = ignoredChannels.add(channel)
     fun unignoreChannel(channel: MessageChannel) = ignoredChannels.remove(channel)

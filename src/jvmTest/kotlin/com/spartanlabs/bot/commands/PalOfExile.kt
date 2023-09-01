@@ -1,20 +1,17 @@
-
-import com.spartanlabs.bottools.botactions.contains
-import com.spartanlabs.bottools.botactions.send
+package com.spartanlabs.bot.commands
 import com.spartanlabs.bottools.commands.GameStatsCommand
 import com.spartanlabs.bottools.commands.Option
 import com.spartanlabs.bottools.commands.SubCommand
 import com.spartanlabs.bottools.dataprocessing.BaseXMLReader
 import com.spartanlabs.bottools.dataprocessing.children
 import com.spartanlabs.bottools.dataprocessing.getChild
-import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.generaltools.capitalizeEveryWord
 import com.spartanlabs.generaltools.cropImage
 import com.spartanlabs.webtools.WebViewer
-import com.spartanlabs.webtools.to
-
-
-class PalOfExile() : GameStatsCommand("poe") {
+import com.spartanlabs.generaltools.to
+import java.lang.IndexOutOfBoundsException
+private val webviewer = WebViewer()
+class PalOfExile() : GameStatsCommand("poe", "https://poe.ninja/challenge/currency") {
     //override var brief = "Your best pal in all of Oriath"
     //override var details = "Helps find Path of Exile information"
     override fun invoke(args: Array<String>) {}
@@ -25,12 +22,13 @@ class PalOfExile() : GameStatsCommand("poe") {
         //MethodCommand(::wikiItem, "wikiitem", "provides a description of the item", this)+
         //        Option(name = "itemname", type = "string", description = "which item do you want to search for?", required = true)
         //wiki + orgData("item", "wikiitem")
+
         getCurrencyNames()
-        SCPriceItem("currency","currency")
+        SCPriceItem("currency", "currency")
         getShardNames()
-        SCPriceItem("shart","currency")
+        SCPriceItem("shart", "currency")
         getOilNames()
-        SCPriceItem("oils","oils")
+        SCPriceItem("oils", "oils")
         price and "currency" becomes "currency"
         price and "shart" becomes "shart"
         price and "oils" becomes "oils"
@@ -42,7 +40,7 @@ class PalOfExile() : GameStatsCommand("poe") {
         makeInteractive()
     }
 
-    private inner class SCPriceItem(searchName:String, val ninjaName:String): SubCommand(searchName,this@PalOfExile) {
+    private inner class SCPriceItem(searchName:String, val ninjaGroupingName:String): SubCommand(searchName,this@PalOfExile) {
         override val brief      = "get the price of a specific $searchName"
         override val details    = "TODO: write detailed description here"
         private final val optionName = "${name}type"
@@ -54,13 +52,26 @@ class PalOfExile() : GameStatsCommand("poe") {
         }
         override fun invoke(args:Array<String>){
             val itemName = getOption(optionName)!!.asString
-            `reply with`("Looking up the item: $itemName from the category: $name")
-            val inSiteName = itemName.replace(" ","-")
-            val url = "https://poe.ninja/challenge/$ninjaName/$inSiteName"
-            val screenshot = WebViewer() screenshot url
-            val crop = cropImage(screenshot, 832, 205, 1050, 868)
+            reply!!> "Looking up the item: $itemName from the category: $name"
+            val ninjaCurrencyName = itemName.replace(" ","-")
+            val url = "https://poe.ninja/challenge/$ninjaGroupingName/$ninjaCurrencyName"
+            val screenshot = webviewer screenshot url
+            val categorySize:CategorySize = when(name){
+                "currency","shard"  -> CategorySize.BUYSELL
+                else                -> CategorySize.BUYONLY
+            }
+            val crop = cropImage(screenshot, 145, 285, categorySize.width, categorySize.height)
             val imageFile = crop to "src/jvmTest/resources/screenshot"
-            Bot send imageFile in channel
+            channel > imageFile
+        }
+    }
+    private enum class CategorySize(val width:Int, val height:Int){
+
+        BUYSELL(CategorySize.defaultWidth,320),
+        BUYONLY(CategorySize.defaultWidth, CategorySize.defaultHeight);
+        companion object {
+            private const val defaultWidth = 330
+            private const val defaultHeight = 254
         }
     }
 
@@ -73,7 +84,12 @@ class PalOfExile() : GameStatsCommand("poe") {
         }
     }
     private fun getCurrencyNames() = acquireFromWiki("Currency#Basic_currency",::basicCurrency)
-    private fun getShardNames() = acquireFromWiki("Currency#Basic_currency",::shardCurrency)
+    private fun getShardNames() = currencyNames.clear().also{
+        arrayOf("mirror","fracturing","exalted","annulment").forEach{
+                shardName->currencyNames.add("$shardName shard")
+        }
+    }
+    //acquireFromWiki("Currency#Basic_currency",::shardCurrency)
     private fun getOilNames(){
         currencyNames.clear()
         val reader = BaseXMLReader()
@@ -91,31 +107,30 @@ class PalOfExile() : GameStatsCommand("poe") {
                 continue
             if(currentItem!!.contains("Shard"))
                 break
-            currencyNames.add(valueMap["currencyitems"]!!
+            currencyNames.add(valueMap[keyName]!!
                 .lowercase().replace("'",""))
         }
     }
     private fun shardCurrency(){
         val keyName = "currencyitems"
         while (true) {
-            mapValueByKey(keyName)
+            try{mapValueByKey(keyName)}catch (_:Exception){return}
             if (valueMap[keyName]!!.contains("Shard"))
                 currencyNames.add(
                     valueMap[keyName]!!
                         .lowercase().replace("'", "")
                 )
-            if(!valueMap[keyName]!![0].isLetter())
-                break
+            try{
+                if(valueMap.let { it.isEmpty() or (it[keyName]?.isEmpty() == true) or !it[keyName]!![0].isLetter() })
+                    break
+            }catch (e:IndexOutOfBoundsException){break}
         }
     }
     private fun acquireFromWiki(wikipage:String, itemSearchFun:()->Unit) {
         currencyNames.clear()
         keyParser setDocument "src/jvmTest/resources/PoECurrencyKeys"
-        try {
-            open("https://www.poewiki.net/wiki/$wikipage") {
-                itemSearchFun.invoke()
-            }
-        } catch (e: Exception) {
+        open("https://www.poewiki.net/wiki/$wikipage") {
+            itemSearchFun.invoke()
         }
     }
     private fun writeGroup(groupName:String){

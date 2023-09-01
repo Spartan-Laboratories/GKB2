@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class SingleChannelListener(protected var channel: MessageChannel, protected var command: Command) : ListenerAdapter() {
     protected var commandInfo: CommandContainer? = null
-    private val primaryListener = Bot.jda!!.registeredListeners[0] as BotListener
+    private val primaryListener = Bot.jda.registeredListeners[0] as BotListener
 
     init {
         primaryListener.ignoreChannel(channel)
