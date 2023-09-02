@@ -100,8 +100,7 @@ open class BaseXMLReader : XMLReader {
     internal infix fun getValue(node: Node): String = try {
         node.firstChild.nodeValue
     } catch (e: NullPointerException) {
-        if(node != null)    log.error("Could not read value of the node ${node.nodeName}")
-        else log.error("Could not read the value of the given node.")
+        log.error("Could not read the value of the given node.")
         ""
     }
 

@@ -1,12 +1,13 @@
 package com.spartanlabs.bottools.commands
 
+import com.spartanlabs.bottools.botactions.online.connector
 import com.spartanlabs.bottools.botactions.online.getConnectionCode
-import com.spartanlabs.bottools.botactions.online.readCookies
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.SourceKeyParser
 import com.spartanlabs.bottools.dataprocessing.minus
 import com.spartanlabs.generaltools.evaluateList
-import it.skrape.fetcher.Cookie
+import com.spartanlabs.generaltools.forEveryIndexed
+import com.spartanlabs.webtools.Skrapie
 
 abstract class OnlineCommand
 /**
@@ -38,8 +39,10 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
             cookieList.remove(node)
         cookieList + ""
     }
-    private fun acquireCookies() = readCookies(primaryAddress).forEachIndexed(::writeCookie)
-    private fun writeCookie(index:Int, cookie: Cookie) =
+
+    private fun acquireCookies() = connector `skrape for cookies` primaryAddress forEveryIndexed ::writeCookie
+
+    private fun writeCookie(index:Int, cookie: Skrapie) =
         (cookieList/"cookie$index").let {
             it/"name" + cookie.name
             it/"value"+ cookie.value
@@ -80,7 +83,7 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
     protected open fun connect() = connect(primaryAddress)
     protected infix fun connect(address: String) = com.spartanlabs.bottools.botactions.online.open(address, cookieMap)
     protected fun connectViaSkrape() = this connectViaSkrape primaryAddress
-    protected infix fun connectViaSkrape(address: String) = com.spartanlabs.bottools.botactions.online.openViaSkrape(address)
+    protected infix fun connectViaSkrape(address: String) = connector skrape address
     protected infix fun testConnection(URL: String) = getConnectionCode(URL)
     protected fun open(address:String, executeWithURLData:()->Unit){
         data = connect(address)

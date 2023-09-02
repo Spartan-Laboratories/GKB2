@@ -27,7 +27,8 @@ abstract class GameStatsCommand
         makeInteractive()
         // Organization
         last and "game" becomes "lastgame"
-        PropertyCommand(::matchesChannelId, this, "channel")
+        PropertyCommand(::matchesChannelId, this, "channel").`with getters`("view")
+        PropertyCommand(::patchnotesChannelID, this,"channel") `using getter` show
         TargetablePropertyCommand(::user_ID, this)
     }
 
@@ -44,6 +45,9 @@ abstract class GameStatsCommand
     internal var matchesChannelId: String?
         get()       = D/guild/"Games"/gameName-"matcheschannel"
         set(value)  = D/guild/"Games"/gameName/"matcheschannel"+value!!
+    internal var patchnotesChannelID:String?
+        get()       = D/guild/"Games"/gameName-"patchnoteschannel"
+        set(value)  = D/guild/"Games"/gameName/"patchnoteschannel"+value!!
     private class DataCommand(dataPropertyAccessPoint:KotGDP.DataAccessPoint, dataPropertyName:String, parent:GameStatsCommand)
     :PropertyCommand(GameStatsCommand.PropertyHolder(dataPropertyAccessPoint, dataPropertyName)::property, parent){}
     private fun getDataCommand(valueName:String) = DataCommand(dataPropertyAccessPoint, valueName, this)
@@ -54,11 +58,11 @@ abstract class GameStatsCommand
             get()       = dataPoint-endPoint
             set(value)  = dataPoint/endPoint+value!!
     }
-    protected fun sendNoIDMessage() = `reply with`("This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID")
+    protected fun sendNoIDMessage() = reply!!> "This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID"
     protected open fun showStats(args: Array<String>){}
     private fun manualLastGame(args: Array<String>){
         require(user_ID != null){
-            `reply with`("Could not get the last game that this user has played because their id has not been set.")
+            reply!!>"Could not get the last game that this user has played because their id has not been set."
             return
         }
         lastGame(args = arrayOf(), auto = false)

@@ -2,15 +2,12 @@ package com.spartanlabs.bottools.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.spartanlabs.bottools.botactions.compareTo
 import com.spartanlabs.bottools.botactions.update
 import com.spartanlabs.bottools.commands.Command
 import com.spartanlabs.bottools.commands.CommandFactory
 import com.spartanlabs.bottools.commands.CommandFactory.Companion.commandData
-import com.spartanlabs.bottools.commands.CommandFactory.Companion.commands
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.D
-import com.spartanlabs.bottools.main.Parser.CommandContainer
 import com.spartanlabs.generaltools.time
 import com.spartanlabs.generaltools.read
 import net.dv8tion.jda.api.JDA
@@ -19,16 +16,15 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.slf4j.LoggerFactory
-import java.io.FileReader
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
+import com.spartanlabs.bottools.manager.viewModel
 
 private val formatter = DateTimeFormatter.ofPattern("hh:mm:ss", Locale.getDefault())
 private var log = LoggerFactory.getLogger(Bot::class.java)
@@ -37,7 +33,7 @@ abstract class Bot(){
     var centralProcess: CentralProcess?
     val formattedUptime = mutableStateOf("00:000")
     //private val pluginCommands  = CommandFactory.plugins.commands
-    private val commands        = CommandFactory.commands
+    private val commands        = updateState("Creating Commands", { CommandFactory.commands })
     class UptimeThread(private var formattedUptime:MutableState<String>): Runnable {
         private val startTime = System.currentTimeMillis()
         private val uptime: Long
@@ -54,25 +50,24 @@ abstract class Bot(){
         }
     }
     init {
-        log.info("Begin init block")
-        // StatusPrinter.print(LoggerFactory.getILoggerFactory() as LoggerContext);
-        running = true
-        //log.time("uptime thread creation", Thread(UptimeThread(formattedUptime))::start)
-        log.time("interaction setup", ::addInteractionResponses)
+        state = "Updating Server Database"
         log.time("server database update", D::updateServerDatabase)
+        state = "Finalizing"
         jda update with(arrayListOf<Command>()){
             addAll(commands)
             //addAll(pluginCommands)
             commandData
         }
         commands.forEach { Bot.commands.put(it.name,it) }
-
+        running = true
+        createDefaultResponses()
         centralProcess = CentralProcess.apply{
             start(::applyDailyUpdate)
         }
+        state = "Running!"
         //tokenState.value = true
     }
-    private fun addInteractionResponses(){
+    private fun createDefaultResponses(){
         responder newMessageReceivedAction              ::handleCommand
         responder newSlashCommandInteractionAction      ::handleCommand
         responder newMessageContextInteractionAction    ::handleCommand
@@ -120,43 +115,45 @@ abstract class Bot(){
     protected abstract fun applyDailyUpdate(currentDate: String?)
 
     companion object {
+        internal var state by viewModel::generalState
+        internal fun start(){
+            listener;responder;jda;notifyComplete
+        }
+        private fun <T> updateState(actionName:String, action:()->T):T{
+            state = actionName
+            log.info(state)
+            return action()
+        }
         private var running = false
         private val keys = read("keys.txt")
-        private val listener = BotListener()
-        val responder = listener.responder
+        private val listener by lazy{
+            updateState("Creating Listener!",::BotListener)
+        }
+        val responder by lazy{listener.responder}
         private val intents = EnumSet.allOf(GatewayIntent::class.java)
-        var jda = createJDA()
+        val jda by lazy{
+            updateState("Creating JDA!",::createJDA)
+        }
         var commands = HashMap<String, Command>()
             protected set
         val commandActiveStatus = HashMap<String, Boolean>()
-        private fun createJDA() =
-            JDABuilder.createDefault(keys[0], intents)
-                .addEventListeners(listener)
-                .enableCache(CacheFlag.VOICE_STATE)
-                .enableCache(CacheFlag.EMOJI)
-                .enableCache(CacheFlag.ONLINE_STATUS)
-                .enableCache(CacheFlag.FORUM_TAGS)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .build().awaitReady()
-        /*
-        private fun handleCommand(commandText: CommandContainer, event: MessageReceivedEvent) {
-            val commandName = commandText.commandName
-            val channel = event.channel
-            if (commands.containsKey(commandName)) {
-                try {
-                    commands[commandName]!!.set(event).invoke(commandText)
-                } catch (ipe: InsufficientPermissionException) {
-                    channel > "Insufficient permissions to perform this command"
-                } catch (e: Exception) {
-                    channel > "An unknown error occured while trying to execute this command"
-                }
-            } else {
-                channel > "This command does not exist"
-            }
+        private val notifyComplete by lazy{
+            updateState("Part 1 initialization complete"){}
         }
-
-         */
-
+        private fun createJDA(): JDA {
+            lateinit var jda: JDA
+            log.time("JDA creation") {
+                jda = JDABuilder.createDefault(keys[0], intents)
+                    .addEventListeners(listener)
+                    .enableCache(CacheFlag.VOICE_STATE)
+                    .enableCache(CacheFlag.EMOJI)
+                    .enableCache(CacheFlag.ONLINE_STATUS)
+                    .enableCache(CacheFlag.FORUM_TAGS)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .build().awaitReady()
+            }
+            return jda
+        }
         private infix fun handleCommand(event: MessageReceivedEvent) {
             if (Parser `starts with trigger` event.message.contentRaw)
                 CommandFactory.getCommand(event)

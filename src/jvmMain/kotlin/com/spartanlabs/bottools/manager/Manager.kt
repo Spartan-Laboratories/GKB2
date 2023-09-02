@@ -15,13 +15,14 @@ import androidx.compose.ui.window.application
 import com.spartanlabs.bottools.main.Bot
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletableFuture.runAsync
 
 
 val log = LoggerFactory.getLogger("Manager")
 lateinit var viewModel: ViewModel
 fun start(bot: Lazy<Bot>){
-    viewModel = ViewModel(bot)
     application{
+        viewModel = ViewModel(bot)
         Window(onCloseRequest = ::exitApplication, title = "Trump Bot"){
             BotUI()
         }
@@ -29,37 +30,33 @@ fun start(bot: Lazy<Bot>){
 }
 @Composable
 private fun BotUI(){
-    var statusText = remember { viewModel.generalState }
-    var readyTokenState = remember{ mutableStateOf(false) }
-    var botStarted      by remember{ mutableStateOf(false) }
-    //var bot by remember{ mutableStateOf(lazy{ KotBot(readyTokenState) }) }
-    //var eventsText by remember{ mutableStateOf(lazy { bot.value.eventsText }) }
+    var vm = remember { viewModel }
+    var statusText = vm.generalState
     MaterialTheme {
         Column(Modifier.fillMaxSize()) {
-            Text(statusText)
             Spacer(modifier = Modifier.height(10.dp))
             StartButton(Modifier.align(Alignment.CenterHorizontally))
+            Spacer(Modifier.height(5.dp))
+            Text("Current status: ${vm.generalState}",Modifier.align(Alignment.CenterHorizontally))
+            if (vm.generalState!="not started"){
+                //stateField(bot)
+                //EventsBox(bot)
+            }
         }
-        Spacer(Modifier.width(1.dp))
-        if (viewModel.generalState!="Not started"){
-            Thread.sleep(1000L)
-            //val bot = bot.value
-            //stateField(bot)
-            //EventsBox(bot)
-            Text(statusText)
-        }
+
     }
 }
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 private fun StartButton(modifier: Modifier) {
     var buttonText by remember{ mutableStateOf("Start!") }
+    var vm = remember { viewModel }
     Button(
         onClick = {
-            viewModel.generalState = "Please wait, initializing!"
-            buttonText =  viewModel.generalState
-            CompletableFuture.runAsync{
-                viewModel.bot
+            buttonText =  "Running!"
+            runAsync{
+                Bot.start()
+                vm.bot
             }
         },
         modifier = modifier.height(60.dp).width(250.dp)

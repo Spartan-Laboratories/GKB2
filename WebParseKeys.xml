@@ -183,19 +183,19 @@
 		<initial>src='</initial>
 		<terminal>'</terminal></Key>
 	<Key>
-		<name>dota2patchnotes</name>
-		<initial>guid/</initial>
-		<initial>></initial>
+		<name>dota2:patchnotes</name>
+		<initial>build#</initial>
 		<terminal>&lt;</terminal></Key>
 	<Key>
-		<name>dota2patchtitle</name>
+		<name>dota2:patchtitle</name>
 		<initial>guid</initial>
 		<initial>title></initial>
 		<terminal>&lt;</terminal>
 	</Key>
 	<Key>
-		<name>dota2patchurl</name>
+		<name>dota2:patchurl</name>
 		<initial>link></initial>
+		<terminal>&lt;</terminal>
 	</Key>
 	<Key>
 		<name>owprofilepic</name>

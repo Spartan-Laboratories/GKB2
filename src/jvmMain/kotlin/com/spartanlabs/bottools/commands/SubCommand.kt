@@ -11,6 +11,7 @@ abstract class SubCommand(name: String, protected val parent: Command) : Command
     override var guild          by parent::guild
     override val targetMember   by parent::targetMember
     override var channel        by parent::channel
+    override var reply          by parent::reply
     val nestLevel
         get() = getNestLevel(parent)
     private var subcommandData      : SubcommandData?       = null

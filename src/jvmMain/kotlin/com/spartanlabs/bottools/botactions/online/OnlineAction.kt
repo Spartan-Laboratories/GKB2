@@ -2,9 +2,6 @@ package com.spartanlabs.bottools.botactions.online
 
 import com.spartanlabs.bottools.botactions.*
 import com.spartanlabs.webtools.Connector
-import it.skrape.fetcher.HttpFetcher
-import it.skrape.fetcher.response
-import it.skrape.fetcher.skrape
 import org.json.JSONObject
 import org.json.JSONTokener
 import org.jsoup.Jsoup
@@ -25,12 +22,7 @@ fun open(URL: String, cookieList:Map<String, String>):String =
     Jsoup.connect(URL).cookies(cookieList).execute().body()
 fun getConnectionCode(URL: String, cookieList:Map<String, String> = emptyMap()) =
     Jsoup.connect(URL).cookies(cookieList).execute().statusCode()
-fun skrape(URL:String) = skrape(HttpFetcher){
-    request{url = URL }
-    response{this}
-}
-fun readCookies(URL:String) = skrape(URL).cookies
-fun openViaSkrape(URL:String) = skrape(URL).responseBody
+
 /**
  * Return the results of a get request sent to the specified URL
  * @param URL to send a get request to

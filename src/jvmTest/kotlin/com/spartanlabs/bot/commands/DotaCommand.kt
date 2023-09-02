@@ -3,7 +3,9 @@ package com.spartanlabs.bot.commands
 import com.spartanlabs.bottools.botactions.contains
 import com.spartanlabs.bottools.botactions.online.connector
 import com.spartanlabs.bottools.botactions.say
+import com.spartanlabs.bottools.botactions.tts
 import com.spartanlabs.bottools.commands.GameStatsCommand
+import com.spartanlabs.bottools.commands.MethodCommand
 import com.spartanlabs.bottools.main.Bot
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import java.awt.Color
@@ -12,13 +14,20 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 import com.spartanlabs.generaltools.to
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
+@OptIn(ExperimentalContracts::class)
 class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
     private val patchNoteURL = "https://steamdb.info/api/PatchnotesRSS/?appid=570"
     init {
-        //createPatchNotesService()
+        createPatchNotesService()
         //createdUserGamesService()
+        MethodCommand(this, "testpatchnotes","tests patch notes",::postPatchNotes)
+        test and "patchnotes" becomes "testpatchnotes"
     }
+
     override fun invoke(args: Array<String>) {}
     protected fun openDB(urlSuffix: String, actions:()->Unit) = open("$primaryAddress/$urlSuffix", actions)
     override fun lastGame(args: Array<String>, auto: Boolean) = showLastGameStats(auto)
@@ -28,12 +37,13 @@ class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
 
 
     override fun postPatchNotes(value: Array<String>){
-        debug("post patch notes test proc")
         data = connectViaSkrape(patchNoteURL)
-        mapValueByKey("dota2patchnotes")
-        com.spartanlabs.bottools.botactions.tts(
+        mapValueByKey("patchtitle")
+        mapValueByKey("patchurl")
+        tts(
             jda.getGuildsByName("me", true)[0].defaultChannel as MessageChannel,
-            valueMap["dota2patchnotes"]!!
+            "There was a minor dota 2 update, you may need to restart your game.\n" +
+                    "The name of the update is: ${valueMap["patchtitle"]}"
         )
     }
 

@@ -27,13 +27,17 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 //PRIMARY LIB
-                implementation("com.spartanlabs:GeneralTools:1.0.12")
-                implementation("com.spartanlabs:WebTools:LATEST")
+                implementation("com.spartanlabs:WebTools:LATEST"){
+                    exclude(group="com.spartanlabs",module="GeneralTools")
+                }
+                implementation("com.spartanlabs:GeneralTools"){
+                    version{
+                        strictly("LATEST")
+                    }
+                }
                 implementation("net.dv8tion:JDA:5.0.0-beta.2")
 
                 //Webscraping:
-                //implementation("it.skrape:skrapeit:0-SNAPSHOT"){isChanging = true}
-                implementation("it.skrape:skrapeit:1.1.5")
                 implementation("org.jsoup:jsoup:1.15.4")
                 implementation("com.mashape.unirest:unirest-java:1.4.9")// https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
 

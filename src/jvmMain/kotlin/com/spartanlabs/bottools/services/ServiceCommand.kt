@@ -19,7 +19,12 @@ class ServiceCommand(serviceName: String) : CheckValueService(serviceName) {
     }
 
     companion object {
-        fun createService(serviceName: String, onChange: TriggerAction, interval: Int):Unit =
-            CheckValueService.createService(ServiceCommand(serviceName), onChange, interval)
+        private val createdServices = ArrayList<String>()
+        fun createService(serviceName: String, onChange: TriggerAction, interval: Int){
+            if(serviceName !in createdServices) {
+                createService(ServiceCommand(serviceName), onChange, interval)
+                createdServices.add(serviceName)
+            }
+        }
     }
 }

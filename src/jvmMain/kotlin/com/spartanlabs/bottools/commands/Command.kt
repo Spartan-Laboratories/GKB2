@@ -96,7 +96,7 @@ abstract class Command protected constructor(val name: String) {
     protected var eb = EmbedBuilder()
     protected var args = Array<String>(0){""}
         private set
-    protected var reply: ReplyCallbackAction? = null
+    open var reply: ReplyCallbackAction? = null
 
     val subCommands by lazy{ HashMap<String, SubCommand>()}
     protected var subCommandRequired = false
@@ -314,7 +314,7 @@ abstract class Command protected constructor(val name: String) {
     protected open infix fun addToSlashCommandData(subcommand: SubcommandData)          = slashCommandData.addSubcommands(subcommand)
     open infix fun addToSlashCommandData(subcommandGroup: SubcommandGroupData)          = slashCommandData.addSubcommandGroups(subcommandGroup)
     protected open infix fun addToSlashCommandData(optionData: OptionData)              = slashCommandData.addOptions(optionData)
-    protected open infix operator fun plus(name: String) = OrganizationCommand(name, this)
+    infix operator fun plus(name: String):OrganizationCommand = if(name !in subCommands.keys)OrganizationCommand(name, this)else subCommands[name] as OrganizationCommand
     protected fun resetChannel(): MessageChannel = channel.apply {
         channel = messageEvent?.channel ?: scEvent!!.messageChannel
     }
@@ -372,7 +372,10 @@ abstract class Command protected constructor(val name: String) {
             return newArgs
         }
     }
-    protected operator fun ReplyCallbackAction.compareTo(message: String)   = 0.also{this@Command `reply with` message}
+    protected operator fun ReplyCallbackAction?.compareTo(message: String):Int{reply
+        (if(this!=null)this@Command::`reply with`else this@Command::say)(message);
+        return 0
+    }
     protected operator fun MessageChannel.compareTo(message: String)        = 0.also{Bot say message in this}
     protected operator fun MessageChannel.compareTo(embed:MessageEmbed)     = 0.also{sendMessageEmbeds(embed).complete()}
     protected operator fun MessageChannel.compareTo(file:File)              = 0.also{Bot send file in this}

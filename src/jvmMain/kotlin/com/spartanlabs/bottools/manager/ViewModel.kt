@@ -7,7 +7,9 @@ import com.spartanlabs.bottools.main.Bot
 
 class ViewModel(bot:Lazy<Bot>) {
     val bot by bot
-    var generalState by mutableStateOf("Not started")
+    var _generalState = "not started"
+    var generalState by mutableStateOf("not started")
+    //var generalStateStage1 by mutableStateOf(Bot.state)
     init{
 
     }

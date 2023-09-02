@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><Service>
-        
     <url>https://steamdb.info/api/PatchnotesRSS/?appid=570</url>
-        
     <skiplines/>
-        
-    <keyname>dota2patchnotes</keyname>
-        
-    <oldvalue>
-</oldvalue>
-    
+    <keyname>dota2:patchnotes</keyname>
+    <oldvalue>12092178</oldvalue>
 </Service>
