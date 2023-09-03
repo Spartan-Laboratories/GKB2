@@ -50,3 +50,4 @@ res/img6.png
 res/itemline.png
 *.log
 src/jvmTest/resources/screenshot.png
+*.log
