@@ -10,12 +10,16 @@ open class PropertyCommand(private val property:KMutableProperty<String?>, paren
     final override val brief = "View or change $propertyName"
     final override val details = "Allows you to see what is the current value of $propertyName or to change it."
     private val setterOption = Option(valueType, "value", "what you want to set $propertyName to", true)
-    protected open val getCommand:SubCommand = MethodCommand(::reply, getterName, "shows the current value of $propertyName", parent)
+    protected open val getCommand:SubCommand = MethodCommand(::reply, getterName, "shows2 the current value of $propertyName", parent)
     protected open val setCommand:SubCommand = MethodCommand(::write, setterName, "sets $propertyName to the given value", parent) + setterOption
     private var value:String?
         get() =     property.getter.call()
         set(value) =property.setter.call(value)
     init {
+        if(this::class == PropertyCommand::class)
+            add()
+    }
+    protected fun add(){
         `add getter`(parent.get)
         `add setter`(parent.set)
     }
@@ -39,4 +43,5 @@ open class PropertyCommand(private val property:KMutableProperty<String?>, paren
 class TargetablePropertyCommand(property:KMutableProperty<String?>, parent:Command):PropertyCommand(property, parent){
     override val getCommand = super.getCommand + Option("user", "person", "the server member whose $propertyName you want to see", false)
     override val setCommand = super.setCommand + Option("user", "person", "the server member for whom you would like to change the $propertyName value", false)
+    init { add() }
 }
