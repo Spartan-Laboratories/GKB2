@@ -5,6 +5,7 @@ import com.spartanlabs.bottools.dataprocessing.KotGDP
 import com.spartanlabs.bottools.services.ServiceCommand
 import com.spartanlabs.bottools.services.UserGameService
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import com.spartanlabs.bottools.dataprocessing.KotGDP.DataAccessPoint as DAP
 
 abstract class GameStatsCommand
      protected constructor(protected var gameName: String, primaryAddress:String="")
@@ -13,7 +14,7 @@ abstract class GameStatsCommand
     override var details = ""
     override val detailStatement = "This command is oriented around providing various subcommands related to a specific game."
     protected var tagSymbol = "#"
-    protected val userOption            = Option("user", "person", "the server member whose game you want to see", false);
+    protected val userOption            = Option("user", "person", "the server member whose game you want to see", false)
     protected val show = this + "show"
     protected val id = this + "id"
     protected val last = this + "last"
@@ -27,27 +28,30 @@ abstract class GameStatsCommand
         makeInteractive()
         // Organization
         last and "game" becomes "lastgame"
-        PropertyCommand(::matchesChannelId, this, "channel").`with getters`("view")
-        PropertyCommand(::patchnotesChannelID, this,"channel") `using getter` show
+        PropertyCommand(::matchesChannelId, this, valueType="channel")
+        PropertyCommand(::patchnotesChannelID, this,valueType="channel")
         TargetablePropertyCommand(::user_ID, this)
     }
-
+    protected val gameNode: DAP
+        get() = guild/"Games"/gameName
+    protected val targetGameNode: DAP
+        get() = member/"Games"/gameName
     /**
      * Returns the in-game username of the guild member that is the target of this command
      * @return In-game username of the target member
      */
     internal var user_ID: String?
-        get()       = D/guild/targetMember!!/"Games"/gameName-"id"
-        set(value)  = D/guild/targetMember!!/"Games"/gameName/"id" + value!!
+        get()       = targetGameNode-"id"
+        set(value)  = targetGameNode/"id" + value!!
     protected var lastMatchID: String?
-        get()       = D/guild/targetMember!!/"Games"/gameName-"latestmatchid"
-        set(newID)  = D/guild/targetMember!!/"Games"/gameName/"latestmatchid"+newID!!
+        get()       = targetGameNode-"latestmatchid"
+        set(newID)  = targetGameNode/"latestmatchid"+newID!!
     internal var matchesChannelId: String?
-        get()       = D/guild/"Games"/gameName-"matcheschannel"
-        set(value)  = D/guild/"Games"/gameName/"matcheschannel"+value!!
+        get()       = gameNode-"matcheschannel"
+        set(value)  = gameNode/"matcheschannel"+value!!
     internal var patchnotesChannelID:String?
-        get()       = D/guild/"Games"/gameName-"patchnoteschannel"
-        set(value)  = D/guild/"Games"/gameName/"patchnoteschannel"+value!!
+        get()       = gameNode-"patchnoteschannel"
+        set(value)  = gameNode/"patchnoteschannel"+value!!
     private class DataCommand(dataPropertyAccessPoint:KotGDP.DataAccessPoint, dataPropertyName:String, parent:GameStatsCommand)
     :PropertyCommand(GameStatsCommand.PropertyHolder(dataPropertyAccessPoint, dataPropertyName)::property, parent){}
     private fun getDataCommand(valueName:String) = DataCommand(dataPropertyAccessPoint, valueName, this)
