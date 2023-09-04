@@ -15,7 +15,7 @@ class HelpCommand : Command("help") {
         //+ Option(name = "command name", description = "the name of the command which you need help with", required = true)
     }
 
-    public override fun invoke(args: Array<String>){
+    override fun invoke(args: Array<String>){
         reply!!>"Hello, I am ${jda.selfUser.name}"
         if (args.isEmpty()) executeGenericVersion()
         else executeCommandNameVersion(args)

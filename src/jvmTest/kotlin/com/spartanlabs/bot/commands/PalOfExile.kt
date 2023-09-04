@@ -52,7 +52,7 @@ class PalOfExile() : GameStatsCommand("poe", "https://poe.ninja/challenge/curren
         }
         override fun invoke(args:Array<String>){
             val itemName = getOption(optionName)!!.asString
-            reply!!> "Looking up the item: $itemName from the category: $name"
+            reply > "Looking up the item: $itemName from the category: $name"
             val ninjaCurrencyName = itemName.replace(" ","-")
             val url = "https://poe.ninja/challenge/$ninjaGroupingName/$ninjaCurrencyName"
             val screenshot = webviewer screenshot url

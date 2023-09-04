@@ -4,6 +4,7 @@ import com.spartanlabs.bottools.botactions.contains
 import com.spartanlabs.bottools.botactions.say
 import com.spartanlabs.bottools.botactions.send
 import com.spartanlabs.bottools.botactions.show
+import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.main.Parser
 import com.spartanlabs.bottools.main.Parser.CommandContainer
@@ -114,6 +115,7 @@ abstract class Command protected constructor(val name: String) {
     val enable  by lazy { this + "enable" }
     val disable by lazy { this + "disable" }
     val test    by lazy { this + "test" }
+    val admin   by lazy { this + "admin" }
 
     /**
      * The only constructor in the class. It is required that this constructor is called from the constructors of subclasses.
@@ -261,7 +263,7 @@ abstract class Command protected constructor(val name: String) {
         }
         this(args)
     }
-    protected abstract operator fun invoke(args : Array<String>)
+    abstract operator fun invoke(args : Array<String>)
     fun say(message: Message) = Bot send message in channel
 
     protected fun makeInteractive() = slashCommandData.apply { description = brief }.also { isInteractible = true }
@@ -314,7 +316,11 @@ abstract class Command protected constructor(val name: String) {
     protected open infix fun addToSlashCommandData(subcommand: SubcommandData)          = slashCommandData.addSubcommands(subcommand)
     open infix fun addToSlashCommandData(subcommandGroup: SubcommandGroupData)          = slashCommandData.addSubcommandGroups(subcommandGroup)
     protected open infix fun addToSlashCommandData(optionData: OptionData)              = slashCommandData.addOptions(optionData)
-    infix operator fun plus(name: String):OrganizationCommand = if(name !in subCommands.keys)OrganizationCommand(name, this)else subCommands[name] as OrganizationCommand
+    infix operator fun plus(name: String):OrganizationCommand =
+        if(name !in subCommands.keys)
+            OrganizationCommand(name, this)
+        else
+            subCommands[name] as OrganizationCommand
     protected fun resetChannel(): MessageChannel = channel.apply {
         channel = messageEvent?.channel ?: scEvent!!.messageChannel
     }
@@ -379,4 +385,7 @@ abstract class Command protected constructor(val name: String) {
     protected operator fun MessageChannel.compareTo(message: String)        = 0.also{Bot say message in this}
     protected operator fun MessageChannel.compareTo(embed:MessageEmbed)     = 0.also{sendMessageEmbeds(embed).complete()}
     protected operator fun MessageChannel.compareTo(file:File)              = 0.also{Bot send file in this}
+    protected operator fun Guild.div(node:String)   = D/this/node
+    protected operator fun Member.div(node:String)  = D/guild/this/node
+    protected operator fun Guild.div(member:Member) = D/this/member
 }
