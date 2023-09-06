@@ -29,7 +29,7 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
         if (primaryAddress.isNotBlank()) {
             deleteOldCookies()
             acquireCookies()
-            logCookieAcquisition()
+            //logCookieAcquisition()
             stateCookies()
             testConnection()
         }
