@@ -1,7 +1,6 @@
 package com.spartanlabs.bottools.services
 
 import com.spartanlabs.bottools.commands.OnlineCommand
-import org.slf4j.LoggerFactory
 
 abstract class CheckValueService protected constructor(private val packetName: String)
     : OnlineCommand(packetName.replace("/","").replace(" ",""),ServicePacketReader(packetName).uRL), Runnable {
@@ -10,7 +9,6 @@ abstract class CheckValueService protected constructor(private val packetName: S
     private var interval = 0
     protected lateinit var onChange: TriggerAction
     protected var packet: ServicePacketReader
-    private val log = LoggerFactory.getLogger(this::class.java)
     protected open var oldValue:String
         get() = packet.oldValue
         set(value) {

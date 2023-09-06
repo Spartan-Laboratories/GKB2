@@ -1,5 +1,6 @@
 package com.spartanlabs.bottools.main
 
+import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
@@ -12,11 +13,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import org.slf4j.LoggerFactory
 
 
 internal class BotListener : ListenerAdapter() {
-    private final val log = LoggerFactory.getLogger(BotListener::class.java)
+    private final val log = MyLogger(BotListener::class.java)
     private val ignoredChannels = ArrayList<MessageChannel>()
     internal val responder = Responder()
 

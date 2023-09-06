@@ -8,8 +8,10 @@ import com.spartanlabs.bottools.commands.CommandFactory
 import com.spartanlabs.bottools.commands.CommandFactory.Companion.commandData
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.D
-import com.spartanlabs.generaltools.time
+import com.spartanlabs.bottools.manager.MyLogger
+import com.spartanlabs.bottools.manager.viewModel
 import com.spartanlabs.generaltools.read
+import com.spartanlabs.generaltools.time
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -24,10 +26,9 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
-import com.spartanlabs.bottools.manager.viewModel
 
 private val formatter = DateTimeFormatter.ofPattern("hh:mm:ss", Locale.getDefault())
-private var log = LoggerFactory.getLogger(Bot::class.java)
+private var log = MyLogger(Bot::class.java)
 abstract class Bot(){
     var eventsText = ""
     var centralProcess: CentralProcess?

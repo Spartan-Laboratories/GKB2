@@ -6,11 +6,7 @@ import androidx.compose.runtime.setValue
 import com.spartanlabs.bottools.main.Bot
 
 class ViewModel(bot:Lazy<Bot>) {
+    var log by mutableStateOf("")
     val bot by bot
-    var _generalState = "not started"
     var generalState by mutableStateOf("not started")
-    //var generalStateStage1 by mutableStateOf(Bot.state)
-    init{
-
-    }
 }

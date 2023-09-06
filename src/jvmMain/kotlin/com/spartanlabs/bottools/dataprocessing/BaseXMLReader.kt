@@ -1,6 +1,6 @@
 package com.spartanlabs.bottools.dataprocessing
 
-import org.slf4j.LoggerFactory
+import com.spartanlabs.bottools.manager.MyLogger
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -19,16 +19,12 @@ import javax.xml.transform.stream.StreamResult
  * @author Spartak
  */
 open class BaseXMLReader : XMLReader {
-    private val log = LoggerFactory.getLogger(BaseXMLReader::class.java)
+    private val log = MyLogger(XMLReader::class.java)
     private val db = DocumentBuilderFactory.newInstance().newDocumentBuilder()
     private val tr = TransformerFactory.newInstance().newTransformer()
     private var doc: Document? = null
     private lateinit var docName: String
     private lateinit var currentNode : Node
-
-    /**
-     * Creates the XML reader
-     */
     init {
         //debug = true;
         try {

@@ -8,6 +8,7 @@ import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.main.Parser
 import com.spartanlabs.bottools.main.Parser.CommandContainer
+import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -22,13 +23,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
-import org.jetbrains.annotations.NotNull
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
-import kotlin.properties.Delegates
 
 /***
  * The command superclass that all command subclasses inherit from.
@@ -349,7 +347,7 @@ abstract class Command protected constructor(val name: String) {
     open fun getOption(optionName: String): OptionMapping? = scEvent!!.getOption(optionName)
 
     companion object {
-        @JvmStatic protected val log = LoggerFactory.getLogger(this::class.java)
+        @JvmStatic protected val log = MyLogger(Command::class.java)
         @JvmStatic protected val error  :(String)->Unit = log::error
         @JvmStatic protected val warn   :(String)->Unit = log::warn
         @JvmStatic protected val info   :(String)->Unit = log::info
