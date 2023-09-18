@@ -5,9 +5,13 @@
         <constructor-arg><list>
             <value>math</value>
             <value>reactionroles</value>
+            <value>weather</value>
+            <value>poker</value>
         </list></constructor-arg>
     </bean>
-    <bean id="dota2" class="com.spartanlabs.bot.commands.DotaCommand" parent="command">
-    </bean>
-    <bean id="poe" class="com.spartanlabs.bot.commands.PalOfExile" scope="prototype"/>
+    <bean id="dota2" class="com.spartanlabs.bot.commands.DotaCommand"/>
+    <bean id="poe" class="com.spartanlabs.bot.commands.PalOfExile"/>
+    <!--bean id="doge" class="com.spartanlabs.bot.commands.DogeCommand"/-->
+    <!--context:annotation-config/-->
+    <!--context:component-scan base-package="com.spartanlabs.bot.commands"/-->
 </beans>

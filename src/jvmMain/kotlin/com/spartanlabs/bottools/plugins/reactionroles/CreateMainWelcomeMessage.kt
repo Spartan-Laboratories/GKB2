@@ -10,6 +10,6 @@ class CreateMainWelcomeMessage : Command("createmainwelcomemessage") {
         makeInteractive()
     }
 
-    public override fun invoke(args: Array<String>) = ReactionRoleActions.createWelcomeMessage(guild, channel)
+    override fun invoke(args: Array<String>) = ReactionRoleActions.createWelcomeMessage(guild, channel)
 
 }

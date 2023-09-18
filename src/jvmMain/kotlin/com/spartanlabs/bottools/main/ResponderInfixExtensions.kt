@@ -13,3 +13,4 @@ infix fun Responder.newMessageDeleteAction(onEventAction : EventAction.MessageDe
 infix fun Responder.newSlashCommandInteractionAction(onEventAction : EventAction.SlashCommandInteractionAction) = addOnSlashCommandInteractionAction(onEventAction)
 infix fun Responder.newUserContextInteractionAction(onEventAction : EventAction.UserContextInteractionAction) = addOnUserContextInteractionAction(onEventAction)
 infix fun Responder.newMessageContextInteractionAction(onEventAction : EventAction.MessageContextInteractionAction) = addOnMessageContextInteractionAction(onEventAction)
+infix fun Responder.newButtonInteractionAction(onEventAction : EventAction.ButtonInteractionAction) = addOnButtonInteractionAction(onEventAction)

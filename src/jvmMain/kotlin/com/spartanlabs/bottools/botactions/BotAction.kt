@@ -3,7 +3,10 @@ package com.spartanlabs.bottools.botactions
 import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.concrete.Category
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -58,3 +61,11 @@ operator fun MessageChannel.contains(message:MessageCreateData) = true.also{ mes
 infix fun Bot.Companion.show(url:String) = MessageCreateData.fromContent(url)
 infix fun Bot.Companion.send(file: File) = MessageCreateData.fromFiles(FileUpload.fromData(file))
 infix fun Bot.Companion.send(message:Message) = MessageCreateData.fromMessage(message)
+
+infix fun Guild.createChannel(name:String) = createTextChannel(name).complete()
+infix fun Category.createChannel(name:String) = createTextChannel(name).complete()
+infix fun Guild.createChannelCategory(categoryName:String):Result<Category> = categories.filter { it.name == categoryName }.let{
+    if(it.isEmpty())    Result.success(createCategory(categoryName).complete())
+    else                Result.failure(Exception("Category already exists"))
+}
+infix fun TextChannel.createThread(threadName:String) = createThreadChannel(threadName).complete()

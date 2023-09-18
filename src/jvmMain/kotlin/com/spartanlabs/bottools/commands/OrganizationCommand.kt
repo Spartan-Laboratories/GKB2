@@ -26,6 +26,9 @@ class OrganizationCommand(name: String, parent:Command) : SubCommand(name, paren
         parent.subCommands[command]!!.addOrganization(this, suffix)
         return this
     }
+    fun MethodCommand(extension:Pair<String,String>, brief:String, onExecute: (Array<String>) -> Unit) =
+        parent.MethodCommand(extension.second,brief,onExecute)
+        .also{this and extension.first becomes extension.second}
     infix fun and(suffix: String) = OrganizationCommandConnectionPoint(this,suffix)
     //override infix operator fun plus(suffix: String) = this and suffix
     operator fun plus(command: orgData) = addCommand(command.alias, command.trueName)

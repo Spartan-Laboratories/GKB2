@@ -6,6 +6,7 @@ import com.spartanlabs.bottools.botactions.update
 import com.spartanlabs.bottools.commands.Command
 import com.spartanlabs.bottools.commands.CommandFactory
 import com.spartanlabs.bottools.commands.CommandFactory.Companion.commandData
+import com.spartanlabs.bottools.commands.CommandFactory.Companion.commands
 import com.spartanlabs.bottools.dataprocessing.B
 import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.manager.MyLogger
@@ -22,6 +23,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.ComponentScan
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -29,12 +31,13 @@ import java.util.*
 
 private val formatter = DateTimeFormatter.ofPattern("hh:mm:ss", Locale.getDefault())
 private var log = MyLogger(Bot::class.java)
+@ComponentScan("com.spartanlabs")
 abstract class Bot(){
     var eventsText = ""
     var centralProcess: CentralProcess?
     val formattedUptime = mutableStateOf("00:000")
-    //private val pluginCommands  = CommandFactory.plugins.commands
-    private val commands        = updateState("Creating Commands", { CommandFactory.commands })
+    private val commandList        = updateState("Creating Commands") { CommandFactory.commands.invoke() }
+    private val pluginCommands  = CommandFactory.plugins.commands
     class UptimeThread(private var formattedUptime:MutableState<String>): Runnable {
         private val startTime = System.currentTimeMillis()
         private val uptime: Long
@@ -55,11 +58,13 @@ abstract class Bot(){
         log.time("server database update", D::updateServerDatabase)
         state = "Finalizing"
         jda update with(arrayListOf<Command>()){
-            addAll(commands)
-            //addAll(pluginCommands)
+            println(commandList.toString())
+            println(pluginCommands.toString())
+            addAll(commandList)
+            addAll(pluginCommands)
             commandData
         }
-        commands.forEach { Bot.commands.put(it.name,it) }
+        //commands.forEach { Bot.commands.put(it.name,it) }
         running = true
         createDefaultResponses()
         centralProcess = CentralProcess.apply{

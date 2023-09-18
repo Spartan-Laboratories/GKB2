@@ -36,8 +36,8 @@ class DataAccessCommand(private val property: KProperty<DAP>, val parent:Command
     @Suppress("Unused")
     val trueCommand = object:PropertyCommand(::data, parent, customName, valueType, getter, setter){
         override val getCommand = super.getCommand  + Option("string", "path","what do you want to get", true)
-        override val setCommand = super.setCommand  + Option("string", "path", "what do you want to set", true) +
-                                                      Option("string", "new-value", "what do you want to set it to?", true)
+        override val setCommand = super.setCommand  + Option("string", "path", "what do you want to set", true) //+
+                                                      //Option("string", "new-value", "what do you want to set it to?", true)
         init { add() }
         override fun replyWithValue(message:Array<String>){
             path = getOption("path")!!.asString

@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -44,7 +42,24 @@ private fun BotUI(){
             StartButton()
             Spacer(modifier = Modifier.height(10.dp))
             if (vm.generalState!="not started"){
-                Text(vm.log,Modifier.verticalScroll(rememberScrollState()))
+                Box(Modifier.fillMaxSize()
+                    .border(color = Color.Green, width = 3.dp, shape = RectangleShape)
+                    .background(color = Color.DarkGray)){
+                    LazyColumn(Modifier.fillMaxSize().padding(5.dp)) {
+                        items(vm.logMessageList.size){
+                            val logData = vm.logMessageList[it]
+                            val logMessageType = logData.first
+                            val message = logData.second
+                            val backgroundColor = when(logMessageType){
+                                "info" -> Color(0xFF00FF00)
+                                "error" -> Color(0xFFFF0000)
+                                else -> Color(0xFF000000)
+                            }
+                            Text(message, Modifier.background(backgroundColor).padding(1.dp))
+                            Spacer(Modifier.height(2.dp))
+                        }
+                    }
+                }
             }
         }
         if(vm.generalState!="not started"){ Box(
@@ -55,11 +70,7 @@ private fun BotUI(){
                 .weight(.78F),
             contentAlignment = Alignment.TopStart)
             {
-                LazyColumn(Modifier.fillMaxHeight().fillMaxWidth().padding(7.dp)) {
-                    items(5){
-                        Text(it.toString())
-                    }
-                }
+
         } }
     }}
 }

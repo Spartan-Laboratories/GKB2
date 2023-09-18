@@ -2,6 +2,7 @@ package com.spartanlabs.bottools.main;
 
 import com.spartanlabs.bottools.main.EventAction.*;
 import com.spartanlabs.generaltools.MiscKt;
+import jdk.jfr.EventType;
 import kotlin.Unit;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.events.guild.update.GuildUpdateNameEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -40,6 +42,7 @@ public class Responder {
 	
 	void actOn(Event event) {
 		actionMap.get(event.getClass()).forEach(eventAction -> eventAction.perform(event));
+		log.info("Responder is responding to the event: " + event.getClass().getSimpleName() + " with " + actionMap.get(event.getClass()).size() + " actions");
 	}
 	public void addOnGuildJoinAction(GuildJoinAction onEventAction) {
 		actionMap.get(GuildJoinEvent.class).add(onEventAction);
@@ -70,6 +73,12 @@ public class Responder {
 	}
 	public void addOnMessageContextInteractionAction(MessageContextInteractionAction onEventAction) {
 		actionMap.get(MessageContextInteractionEvent.class).add(onEventAction);
+	}
+	public void addOnButtonInteractionAction(ButtonInteractionAction onEventAction) {
+		actionMap.get(ButtonInteractionEvent.class).add(onEventAction);
+	}
+	public <EventType extends Event> void on(EventAction<EventType> action){
+		actionMap.get(action.getClass().getMethods()[0].getParameters()[0].getType()).add(action);
 	}
 	private static List<Class> getSubclasses(Class superClass) {
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);

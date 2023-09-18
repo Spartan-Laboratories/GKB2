@@ -29,8 +29,7 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
         if (primaryAddress.isNotBlank()) {
             deleteOldCookies()
             acquireCookies()
-            //logCookieAcquisition()
-            stateCookies()
+            //stateCookies()
             testConnection()
         }
     }
@@ -47,7 +46,6 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
             it/"name" + cookie.name
             it/"value"+ cookie.value
         }
-    private fun logCookieAcquisition(){}
     private fun stateCookies() = cookieList.readAll().map { (it - "name") to (it - "value") }.map{it.toString()}.forEach(log::info)
     private fun testConnection() =  try  { connect();   log.info("The command $name successfully validated connection")}
                                     catch(_:Exception){ log.info("The command $name could not successfully validate connection.")}

@@ -7,6 +7,7 @@ import com.spartanlabs.bottools.main.Bot
 
 class ViewModel(bot:Lazy<Bot>) {
     var log by mutableStateOf("")
+    var logMessageList = arrayListOf<Pair<String,String>>()
     val bot by bot
     var generalState by mutableStateOf("not started")
 }

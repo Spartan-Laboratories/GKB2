@@ -1,9 +1,10 @@
 package com.spartanlabs.bottools.commands
 
-import com.spartanlabs.bottools.botactions.contains
-import com.spartanlabs.bottools.botactions.say
-import com.spartanlabs.bottools.botactions.send
-import com.spartanlabs.bottools.botactions.show
+import com.spartanlabs.bottools.botactions.*
+import com.spartanlabs.bottools.botactions.createChannel as catCC
+import com.spartanlabs.bottools.botactions.createChannel as guildCC
+import com.spartanlabs.bottools.botactions.createChannelCategory as newCategory
+import com.spartanlabs.bottools.botactions.createThread as channelCT
 import com.spartanlabs.bottools.dataprocessing.D
 import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.main.Parser
@@ -11,6 +12,7 @@ import com.spartanlabs.bottools.main.Parser.CommandContainer
 import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.concrete.Category
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -24,30 +26,11 @@ import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
+import java.net.URL
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
-/***
- * The command superclass that all command subclasses inherit from.
- *
- * <h6>Example:</h6><br>
- * <code>CommandName **extends** Command{
- * **public** CommandName(){
- * **super**();
- * setCommandName("commandname");
- * addAlias("alias"); 	// Optional
- * }
- * **public boolean** execute(){
- * Botmain.out("The command has been executed");
- * return true;
- * }
- * }
-</code> *
- * <br></br>
- *
- * @author spartak
- ***/
 abstract class Command protected constructor(val name: String) {
     /*--------------I AM--------------------------------*/
     @set:JvmName("setActive")
@@ -259,7 +242,7 @@ abstract class Command protected constructor(val name: String) {
             commandText.args = getSecondaryArgs(args)
             subCommands[args[0]]!!(commandText)
         }
-        this(args)
+        else this(args)
     }
     abstract operator fun invoke(args : Array<String>)
     fun say(message: Message) = Bot send message in channel
@@ -383,7 +366,15 @@ abstract class Command protected constructor(val name: String) {
     protected operator fun MessageChannel.compareTo(message: String)        = 0.also{Bot say message in this}
     protected operator fun MessageChannel.compareTo(embed:MessageEmbed)     = 0.also{sendMessageEmbeds(embed).complete()}
     protected operator fun MessageChannel.compareTo(file:File)              = 0.also{Bot send file in this}
+    protected operator fun MessageChannel.compareTo(url: URL)                = 0.also{Bot show url.path in this}
     protected operator fun Guild.div(node:String)   = D/this/node
     protected operator fun Member.div(node:String)  = D/guild/this/node
     protected operator fun Guild.div(member:Member) = D/this/member
+    protected infix fun Guild.createChannel(name:String) = guildCC(name)
+    protected infix fun Guild.createCategory(name:String) = newCategory(name).getOrDefault(guild.categories.first { it.name == name })
+    protected infix fun Category.createChannel(name:String) = catCC(name)
+    protected fun my(optionName:String) = getOption(optionName)!!.asString
+    protected operator fun div(optionName:String) = my(optionName)
+    fun MethodCommand(name:String, brief:String, onExecute: (Array<String>)->Unit) = MethodCommand(this, name, brief, onExecute)
+    protected fun Option(name:String, description:String, required:Boolean = true, type:String = "string",) = Option(type,name, description, required)
 }

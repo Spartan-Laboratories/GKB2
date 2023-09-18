@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.guild.update.GuildUpdateNameEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
@@ -24,4 +25,5 @@ fun interface EventAction<EventType : Event> {
     fun interface SlashCommandInteractionAction : EventAction<SlashCommandInteractionEvent>
     fun interface UserContextInteractionAction : EventAction<UserContextInteractionEvent>
     fun interface MessageContextInteractionAction : EventAction<MessageContextInteractionEvent>
+    fun interface ButtonInteractionAction : EventAction<ButtonInteractionEvent>
 }

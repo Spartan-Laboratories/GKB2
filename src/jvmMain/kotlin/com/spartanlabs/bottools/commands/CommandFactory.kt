@@ -14,13 +14,30 @@ class CommandFactory {
     companion object{
         private val log = LoggerFactory.getLogger(CommandFactory::class.java)
         private val applicationContext = ClassPathXmlApplicationContext("internals.xml","plugins.xml","commands.xml")
-        @JvmStatic val commands = applicationContext.getBeansOfType(Command::class.java).values.filter{it.active }
-        /*
-        @JvmStatic val plugins  = (applicationContext.getBean("plugins") as List<String>).map { Plugins[it] }.filterNotNull()
-        @JvmStatic val List<Plugin>.commands
-            get() = arrayListOf<Command>().apply { plugins.forEach { this.addAll(it()) } }
+        @JvmStatic val commands = {
+            val beanMap = applicationContext.getBeansOfType(Command::class.java)
+            val commands = beanMap.values
+            println(commands.toString())
+            val activeCommands = commands.filter{it.active}
+            applicationContext.getBeansOfType(Command::class.java).values.filter{it.active }
+        }
 
-         */
+        val plugins:List<Plugin>
+            get() {
+                val pluginBeans = applicationContext.getBean("activeplugins")
+                val pluginsNameList = pluginBeans as List<String>
+                val plugins = pluginsNameList.map { Plugins[it] }.filterNotNull()
+                return plugins
+            }
+        val List<Plugin>.commands : List<Command>
+            get() {
+                val commandList = arrayListOf<Command>()
+                plugins.forEach{
+                    commandList.addAll(it.invoke())
+                }
+                return commandList
+            } //arrayListOf<Command>().apply { plugins.forEach { this.addAll(it()) } }
+
         var trigger:String = "/"
         private lateinit var event:Event
         private val name:String

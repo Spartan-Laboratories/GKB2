@@ -1,12 +1,13 @@
 package com.spartanlabs.bottools.plugins.math
 
 import com.spartanlabs.bottools.commands.Command
+import com.spartanlabs.bottools.commands.Option
 import net.dv8tion.jda.internal.utils.tuple.MutablePair
 import net.dv8tion.jda.internal.utils.tuple.Pair
 import kotlin.math.pow
 
 class MathCommand() : Command("math") {
-    override var brief = "Calculates the answer to any basic mathematical problem"
+    override val brief = "Calculates the answer to any basic mathematical problem"
     override val details = """This command is able to understand and process: operators, parenthesis, logarithms, basic trigonometric functions, and more
            |Examples:
            |    `/math 1+3*2`
@@ -14,11 +15,10 @@ class MathCommand() : Command("math") {
            |    `/math sin(ln(2.718))`
            |    `/math log(2,16)`"""
     private val chars = charArrayOf('^', '*', '/', '+', '-')
-    private val operators = ArrayList<Char>()
+    private val operators = List<Char>(chars.size){ index->chars[index] }
     init {
-        for (c: Char in chars) operators.add(c)
-
-        makeInteractive() //+ Option(type = "string", name = "problem", description = "the problem that you want to be solved", true)
+        makeInteractive()
+        this + Option(type = "string", name = "problem", description = "the problem that you want to be solved", true)
     }
 
     override fun invoke(args: Array<String>){

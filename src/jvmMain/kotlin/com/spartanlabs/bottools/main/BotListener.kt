@@ -2,12 +2,14 @@ package com.spartanlabs.bottools.main
 
 import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.update.GuildUpdateNameEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
@@ -15,7 +17,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 
-internal class BotListener : ListenerAdapter() {
+internal open class BotListener : ListenerAdapter() {
     private final val log = MyLogger(BotListener::class.java)
     private val ignoredChannels = ArrayList<MessageChannel>()
     internal val responder = Responder()
@@ -39,4 +41,5 @@ internal class BotListener : ListenerAdapter() {
     override fun onSlashCommandInteraction  (event: SlashCommandInteractionEvent)   = responder reactTo event
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) = responder reactTo event
     override fun onUserContextInteraction   (event: UserContextInteractionEvent)    = responder reactTo event
+    override fun onButtonInteraction        (event: ButtonInteractionEvent)         = responder reactTo event
 }

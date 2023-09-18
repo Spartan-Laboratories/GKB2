@@ -1,5 +1,6 @@
 package com.spartanlabs.bottools.manager
 
+import com.spartanlabs.bottools.main.Bot
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import com.spartanlabs.bottools.manager.viewModel as vm
@@ -8,6 +9,6 @@ class MyLogger(name: Class<*>, private val logger:Logger = LoggerFactory.getLogg
     constructor(name:String):this(Class.forName(name), LoggerFactory.getLogger(name))
     override fun info(s:String){
         logger.info(s)
-        vm.log += "$s\n"
+        vm.logMessageList.add("info" to s)
     }
 }

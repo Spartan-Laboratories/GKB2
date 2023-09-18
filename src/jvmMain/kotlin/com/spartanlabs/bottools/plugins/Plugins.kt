@@ -11,6 +11,7 @@ import com.spartanlabs.bottools.plugins.poker.PokerCommand
 import com.spartanlabs.bottools.plugins.reactionroles.AddReactionRole
 import com.spartanlabs.bottools.plugins.reactionroles.CreateMainWelcomeMessage
 import com.spartanlabs.bottools.plugins.reactionroles.ReactionRoleActions
+import com.spartanlabs.bottools.plugins.weather.WeatherCommand
 import com.spartanlabs.generaltools.evaluateList
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -26,6 +27,7 @@ object Plugins {
         "math"          -> Math
         "poker"         -> Poker
         "spamcontrol"   -> SpamControl
+        "weather"       -> Weather
         else            -> null
     }
     val `REACTION ROLES` = Plugin {
@@ -43,6 +45,9 @@ object Plugins {
     val SpamControl = Plugin{
         responder newMessageReceivedAction ::isSpam
         return@Plugin listOf()
+    }
+    val Weather = Plugin{
+        return@Plugin listOf(WeatherCommand())
     }
 
     private fun isSpam(event: MessageReceivedEvent): Boolean {
