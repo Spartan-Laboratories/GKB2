@@ -41,13 +41,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 *.log
-res/img1.png
-res/img2.png
-res/img3.png
-res/img4.png
-res/img5.png
-res/img6.png
-res/itemline.png
-*.log
+res/
 src/jvmTest/resources/screenshot.png
-*.log
