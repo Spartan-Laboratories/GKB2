@@ -42,4 +42,6 @@ bin/
 .DS_Store
 *.log
 res/
+logs/
+guildData/
 src/jvmTest/resources/screenshot.png
