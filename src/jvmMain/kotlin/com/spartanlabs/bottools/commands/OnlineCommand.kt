@@ -21,7 +21,8 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
     protected lateinit var data : String
     private val cookieList by lazy { B/"Cookies"/name}
     private val cookieMap
-        get() = cookieList.readAll().map { it-"name" to it-"value" }.toMap()
+        get() = cookieList.children.associate { it to cookieList-it }
+
     init{
         prepAddress()
     }
@@ -33,20 +34,14 @@ protected constructor(name: String, protected var primaryAddress: String = "") :
             testConnection()
         }
     }
-    private fun deleteOldCookies(){
-        for (node in cookieList.readAll())
-            cookieList.remove(node)
-        cookieList + ""
-    }
-
+    private fun deleteOldCookies() = cookieList.clear()
     private fun acquireCookies() = connector `skrape for cookies` primaryAddress forEveryIndexed ::writeCookie
-
     private fun writeCookie(index:Int, cookie: Skrapie) =
         (cookieList/"cookie$index").let {
-            it/"name" + cookie.name
-            it/"value"+ cookie.value
+            it/"name" to cookie.name
+            it/"value" to cookie.value
         }
-    private fun stateCookies() = cookieList.readAll().map { (it - "name") to (it - "value") }.map{it.toString()}.forEach(log::info)
+    private fun stateCookies() = cookieMap.map{ it.toString() }.forEach(info)
     private fun testConnection() =  try  { connect();   log.info("The command $name successfully validated connection")}
                                     catch(_:Exception){ log.info("The command $name could not successfully validate connection.")}
     protected fun cutToAfter(searchTerm: String) {
