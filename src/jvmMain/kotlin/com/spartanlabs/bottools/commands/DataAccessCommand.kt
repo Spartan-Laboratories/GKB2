@@ -3,7 +3,7 @@ package com.spartanlabs.bottools.commands
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KProperty
 import kotlin.reflect.KVisibility
-import com.spartanlabs.bottools.dataprocessing.KotGDP.DataAccessPoint as DAP
+import com.spartanlabs.bottools.dataprocessing.DatabaseAccessPoint as DAP
 
 class DataAccessCommand(private val property: KProperty<DAP>, val parent:Command, val customName:String = property.name, valueType:String="string", getter:String="get", setter:String="set")
 {
@@ -31,7 +31,7 @@ class DataAccessCommand(private val property: KProperty<DAP>, val parent:Command
             var dap = property.getter.call()
             for (p in parsedPath)
                 dap /= p
-            dap + value!!
+            dap to value
         }
     @Suppress("Unused")
     val trueCommand = object:PropertyCommand(::data, parent, customName, valueType, getter, setter){
