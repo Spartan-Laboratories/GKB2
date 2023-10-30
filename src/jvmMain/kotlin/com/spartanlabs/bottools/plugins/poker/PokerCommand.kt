@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import java.util.concurrent.CompletableFuture.runAsync
 
 class PokerCommand() : Command("poker") {
     override val brief = "Allows you to play texas hold em' poker"
@@ -22,12 +23,7 @@ class PokerCommand() : Command("poker") {
         override val brief = "creates a new table for people to play at"
         override val details = "creates a new table for people to play at"
         lateinit var table: Table
-        val buttonListener = object: BotListener(){
-            init{
-                responder newButtonInteractionAction ::onButtonClick
-                Bot.jda.addEventListener(this)
-            }
-        }
+        var reaction:EventAction.ButtonInteractionAction = ::onButtonClick as EventAction.ButtonInteractionAction
         override fun invoke(args: Array<String>) {
             targetMember!!.user.name.let { creatorName ->
                 val channel = guild createCategory "Poker Tables" createChannel "$creatorName's poker table"
@@ -35,6 +31,7 @@ class PokerCommand() : Command("poker") {
                 tables[channel] = table
                 handles[table] = HashMap()
             }
+            Bot.responder newButtonInteractionAction ::onButtonClick
             // Create the buttons that will ask the user what they want to do next
             reply!!.addActionRow(
                 Button.primary("$poker:$name:sit", "Sit down at your table"),
@@ -54,14 +51,12 @@ class PokerCommand() : Command("poker") {
                 "$poker:$name:join" -> Bot say "The table was created but you did not join it" to channel
                 else -> throw Exception("Unknown button id")
             }
-            // Since these buttons are only used once, we can remove the listener
-            Bot.jda.removeEventListener(buttonListener)
+            // Since these buttons are only used once, we can remove the response
+            Bot.responder.removeReaction(reaction);
         }
     }
     private val sitAtTable = MethodCommand("sithere", "sit at a table")         { targetMember!! attemptSitAt   channel }
-    private val playGame = MethodCommand("playgame", "join in on the next game"){
-        targetMember!! attemptPlay    channel
-    }
+    private val playGame = MethodCommand("playgame", "join in on the next game"){ targetMember!! attemptPlay    channel }
     private val playerActionListener = object: BotListener(){
         init{
             responder newButtonInteractionAction ::performPlayerAction
