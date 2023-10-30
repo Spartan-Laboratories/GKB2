@@ -6,6 +6,7 @@ import com.spartanlabs.bottools.main.Bot
 import com.spartanlabs.bottools.main.newMessageDeleteAction
 import com.spartanlabs.bottools.main.newMessageReactionAddAction
 import com.spartanlabs.bottools.main.newMessageReceivedAction
+import com.spartanlabs.bottools.manager.MyLogger
 import com.spartanlabs.bottools.plugins.math.MathCommand
 import com.spartanlabs.bottools.plugins.poker.PokerCommand
 import com.spartanlabs.bottools.plugins.reactionroles.AddReactionRole
@@ -17,7 +18,11 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 class Plugin(val fn:Bot.Companion.()->Collection<Command>){
-    operator fun invoke():Collection<Command> = fn.invoke(Bot)
+    val log = MyLogger(Plugin::class.java)
+    operator fun invoke():Collection<Command> = fn.invoke(Bot).also{
+        //log.info("Plugin ${this@Plugin.javaClass} has been invoked")
+        //log.info(it.toString())
+    }
 }
 
 
@@ -31,7 +36,7 @@ object Plugins {
         else            -> null
     }
     val `REACTION ROLES` = Plugin {
-        D.addTagFile("src/jvmMain/resources/ReactionRoles.xml")
+        //TODO D.addTagFile("src/jvmMain/resources/ReactionRoles.xml")
         responder newMessageReactionAddAction  ReactionRoleActions::giveReactionRole
         responder newMessageDeleteAction       ReactionRoleActions::removeDeletedWelcomeMessage
         return@Plugin listOf(AddReactionRole(),CreateMainWelcomeMessage())

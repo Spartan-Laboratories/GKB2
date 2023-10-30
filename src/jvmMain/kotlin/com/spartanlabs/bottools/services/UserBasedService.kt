@@ -1,7 +1,7 @@
 package com.spartanlabs.bottools.services
 
 import com.spartanlabs.bottools.dataprocessing.D
-import com.spartanlabs.bottools.dataprocessing.KotGDP
+import com.spartanlabs.bottools.dataprocessing.DatabaseAccessPoint as DAP
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import org.apache.commons.lang3.tuple.ImmutablePair
@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory
 open class UserBasedService internal constructor(serviceName: String) : CheckValueService(serviceName) {
     override var oldValue:String
         get() = finalAccessPoint()?.let{ it.left-it.right} ?: ""
-        set(value) = finalAccessPoint()!!.let{ it.left/it.right+value}
-    private fun finalAccessPoint():ImmutablePair<KotGDP.DataAccessPoint, String>?{
+        set(value) = finalAccessPoint()!!.let{ it.left/it.right to value}
+    private fun finalAccessPoint():ImmutablePair<DAP, String>?{
         var accessPoint = D/guild/member
         packet.oldValue.split("/").let{
             it.forEachIndexed{index, name ->
