@@ -1,11 +1,9 @@
 package com.spartanlabs.bottools.commands
 
-import com.spartanlabs.bottools.dataprocessing.D
-import com.spartanlabs.bottools.dataprocessing.KotGDP
 import com.spartanlabs.bottools.services.ServiceCommand
 import com.spartanlabs.bottools.services.UserGameService
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import com.spartanlabs.bottools.dataprocessing.KotGDP.DataAccessPoint as DAP
+import com.spartanlabs.bottools.dataprocessing.DatabaseAccessPoint as DAP
 
 abstract class GameStatsCommand
      protected constructor(protected var gameName: String, primaryAddress:String="")
@@ -42,26 +40,16 @@ abstract class GameStatsCommand
      */
     internal var user_ID: String?
         get()       = targetGameNode-"id"
-        set(value)  = targetGameNode/"id" + value!!
+        set(value)  = targetGameNode/"id" to value
     protected var lastMatchID: String?
         get()       = targetGameNode-"latestmatchid"
-        set(newID)  = targetGameNode/"latestmatchid"+newID!!
+        set(newID)  = targetGameNode/"latestmatchid" to newID
     internal var matchesChannelId: String?
         get()       = gameNode-"matcheschannel"
-        set(value)  = gameNode/"matcheschannel"+value!!
+        set(value)  = gameNode/"matcheschannel" to value
     internal var patchnotesChannelID:String?
         get()       = gameNode-"patchnoteschannel"
-        set(value)  = gameNode/"patchnoteschannel"+value!!
-    private class DataCommand(dataPropertyAccessPoint:KotGDP.DataAccessPoint, dataPropertyName:String, parent:GameStatsCommand)
-    :PropertyCommand(GameStatsCommand.PropertyHolder(dataPropertyAccessPoint, dataPropertyName)::property, parent){}
-    private fun getDataCommand(valueName:String) = DataCommand(dataPropertyAccessPoint, valueName, this)
-    val dataPropertyAccessPoint:KotGDP.DataAccessPoint
-        get() = D/guild/"Games"/gameName
-    class PropertyHolder(private val dataPoint:KotGDP.DataAccessPoint, private val endPoint:String){
-        var property:String?
-            get()       = dataPoint-endPoint
-            set(value)  = dataPoint/endPoint+value!!
-    }
+        set(value)  = gameNode/"patchnoteschannel" to value
     protected fun sendNoIDMessage() = reply!!> "This person's ${gameName} ID has not been set. Use:```/$gameName setid *in-game id* @forthisperson``` to set someone's ID"
     protected open fun showStats(args: Array<String>){}
     private fun manualLastGame(args: Array<String>){
