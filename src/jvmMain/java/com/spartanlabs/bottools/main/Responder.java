@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class Responder {
 	Logger log = LoggerFactory.getLogger(this.getClass());
@@ -43,6 +44,9 @@ public class Responder {
 	void actOn(Event event) {
 		actionMap.get(event.getClass()).forEach(eventAction -> eventAction.perform(event));
 		log.info("Responder is responding to the event: " + event.getClass().getSimpleName() + " with " + actionMap.get(event.getClass()).size() + " actions");
+	}
+	public void removeReaction(EventAction reaction){
+		actionMap.values().forEach(actionList->actionList.remove(reaction));
 	}
 	public void addOnGuildJoinAction(GuildJoinAction onEventAction) {
 		actionMap.get(GuildJoinEvent.class).add(onEventAction);

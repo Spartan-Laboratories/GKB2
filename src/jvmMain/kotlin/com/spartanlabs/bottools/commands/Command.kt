@@ -1,27 +1,18 @@
 package com.spartanlabs.bottools.commands
 
 import com.spartanlabs.bottools.botactions.*
-import com.spartanlabs.bottools.botactions.createChannel as catCC
-import com.spartanlabs.bottools.botactions.createChannel as guildCC
-import com.spartanlabs.bottools.botactions.createChannelCategory as newCategory
-import com.spartanlabs.bottools.botactions.createThread as channelCT
-import com.spartanlabs.bottools.dataprocessing.D
-import com.spartanlabs.bottools.main.Bot
-import com.spartanlabs.bottools.main.Parser
+import com.spartanlabs.bottools.dataprocessing.*
+import com.spartanlabs.bottools.main.*
 import com.spartanlabs.bottools.main.Parser.CommandContainer
 import com.spartanlabs.bottools.manager.MyLogger
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.entities.channel.concrete.Category
+import net.dv8tion.jda.api.entities.channel.concrete.*
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.commands.OptionMapping
-import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.*
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.FileUpload
@@ -29,7 +20,12 @@ import java.io.File
 import java.net.URL
 import java.time.Instant
 import java.util.concurrent.TimeUnit
+import javax.*
 import kotlin.collections.set
+import com.spartanlabs.bottools.botactions.createChannel as catCC
+import com.spartanlabs.bottools.botactions.createChannel as guildCC
+import com.spartanlabs.bottools.botactions.createChannelCategory as newCategory
+import com.spartanlabs.bottools.botactions.createThread as channelCT
 
 abstract class Command protected constructor(val name: String) {
     /*--------------I AM--------------------------------*/
@@ -85,8 +81,6 @@ abstract class Command protected constructor(val name: String) {
     var isInteractible = false
         private set
     private var noSubCommandDescription: String? = null
-    private val scRequiredErrMsg = "This command has to be followed by a sub-command."
-    private val invalidSCErrMsg = " is not a valid sub-command."
 
     protected lateinit var slashCommandData: SlashCommandData
     protected var deferredReply: ReplyCallbackAction? = null
@@ -323,7 +317,7 @@ abstract class Command protected constructor(val name: String) {
     private val finalEmbed: MessageEmbed
         get() {
             if(eb.build().footer.let{it == null || it.text == ""})
-                eb.setFooter(Bot.jda!!.selfUser.name)
+                eb.setFooter(Bot.jda.selfUser.name)
             return eb.setTimestamp(Instant.now()).build()
         }
 
@@ -336,6 +330,8 @@ abstract class Command protected constructor(val name: String) {
         @JvmStatic protected val info   :(String)->Unit = log::info
         @JvmStatic protected val debug  :(String)->Unit = log::debug
         @JvmStatic protected val trace  :(String)->Unit = log::trace
+        private const val scRequiredErrMsg = "This command has to be followed by a sub-command."
+        private const val invalidSCErrMsg = " is not a valid sub-command."
         private const val embedMaximumDescriptionLength = 2048
         private const val emdl = embedMaximumDescriptionLength
         /**
@@ -373,8 +369,10 @@ abstract class Command protected constructor(val name: String) {
     protected infix fun Guild.createChannel(name:String) = guildCC(name)
     protected infix fun Guild.createCategory(name:String) = newCategory(name).getOrDefault(guild.categories.first { it.name == name })
     protected infix fun Category.createChannel(name:String) = catCC(name)
+    protected infix fun TextChannel.createThread(name:String) = channelCT(name)
     protected fun my(optionName:String) = getOption(optionName)!!.asString
     protected operator fun div(optionName:String) = my(optionName)
     fun MethodCommand(name:String, brief:String, onExecute: (Array<String>)->Unit) = MethodCommand(this, name, brief, onExecute)
     protected fun Option(name:String, description:String, required:Boolean = true, type:String = "string",) = Option(type,name, description, required)
+    protected infix fun DatabaseAccessPoint.to(value:String?) = this to (value?:"")
 }

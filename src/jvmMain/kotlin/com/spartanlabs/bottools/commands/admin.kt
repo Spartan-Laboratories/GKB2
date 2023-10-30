@@ -2,7 +2,7 @@ package com.spartanlabs.bottools.commands
 
 import com.spartanlabs.bottools.dataprocessing.D
 import org.springframework.stereotype.Component
-import com.spartanlabs.bottools.dataprocessing.KotGDP.DataAccessPoint as DAP
+import com.spartanlabs.bottools.dataprocessing.DatabaseAccessPoint as DAP
 
 @Component
 class admin:Command("admin") {
