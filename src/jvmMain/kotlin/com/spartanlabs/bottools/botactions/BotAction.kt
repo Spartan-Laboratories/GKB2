@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.Category
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.utils.FileUpload
@@ -39,6 +40,7 @@ private val log = MyLogger(Bot::class.java)
  */
 infix fun JDA.update(commands: List<CommandData>) = updateCommands().addCommands(commands).queue()
 operator fun MessageChannel.compareTo(message: String) =    0.also{ Bot say message     in this}
+operator fun MessageChannel.compareTo(message: MessageCreateData) =   0.also{ sendMessage(message).complete()}
 operator fun MessageChannel.compareTo(image: URL) =         0.also{ Bot show image.path in this}
 operator fun MessageChannel.compareTo(file: File) =         0.also{ Bot send file       in this}
 
@@ -69,3 +71,6 @@ infix fun Guild.createChannelCategory(categoryName:String):Result<Category> = ca
     else                Result.failure(Exception("Category already exists"))
 }
 infix fun TextChannel.createThread(threadName:String) = createThreadChannel(threadName).complete()
+infix fun TextChannel.delete(message:Message) = deleteMessageById(message.id).queue()
+infix fun MessageChannelUnion.delete(message:Message) = deleteMessageById(message.id).queue()
+val Message.delete get() = delete().queue()

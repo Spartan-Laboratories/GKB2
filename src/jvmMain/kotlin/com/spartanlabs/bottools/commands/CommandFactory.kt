@@ -1,38 +1,42 @@
 package com.spartanlabs.bottools.commands
 
 import com.spartanlabs.bottools.main.Parser
+import com.spartanlabs.bottools.manager.MyLogger
 import com.spartanlabs.bottools.plugins.Plugin
 import com.spartanlabs.bottools.plugins.Plugins
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.getBeansOfType
 import org.springframework.context.support.ClassPathXmlApplicationContext
 
 class CommandFactory {
     companion object{
-        private val log = LoggerFactory.getLogger(CommandFactory::class.java)
-        private val applicationContext = ClassPathXmlApplicationContext("internals.xml","plugins.xml","commands.xml")
-        @JvmStatic val commands = {
-            val beanMap = applicationContext.getBeansOfType(Command::class.java)
-            val commands = beanMap.values
-            println(commands.toString())
-            val activeCommands = commands.filter{it.active}
-            applicationContext.getBeansOfType(Command::class.java).values.filter{it.active }
+        private val log = MyLogger(CommandFactory::class.java)
+        private val applicationContext = let {
+            log.info("Starting application context creation")
+            ClassPathXmlApplicationContext("internals.xml", "plugins.xml", "commands.xml").also {
+                log.info("Application context created")
+            }
+        }
+        val commands : List<Command>
+            get(){
+            log.info("Starting standard command creation")
+            val beanMap = applicationContext.getBeansOfType<Command>(true,true)
+            //val commands = beanMap.values
+            //println(commands.toString())
+            //val activeCommands = commands.filter{it.active}
+            return applicationContext.getBeansOfType(Command::class.java).values.filter{it.active.apply{
+                log.info("Command ${it.name} is active: $this")
+            } }
         }
 
-        val plugins:List<Plugin>
-            get() {
-                val pluginBeans = applicationContext.getBean("activeplugins")
-                val pluginsNameList = pluginBeans as List<String>
-                val plugins = pluginsNameList.map { Plugins[it] }.filterNotNull()
-                return plugins
-            }
+        val plugins = (applicationContext.getBean("activeplugins") as List<String>).mapNotNull { Plugins[it] }
         val List<Plugin>.commands : List<Command>
             get() {
                 val commandList = arrayListOf<Command>()
-                plugins.forEach{
+                forEach{
                     commandList.addAll(it.invoke())
                 }
                 return commandList
@@ -51,6 +55,7 @@ class CommandFactory {
         @JvmStatic internal infix fun getCommand(event: Event):Command{
             log.info("Starting command creation")
             this.event = event
+            (event as GenericCommandInteractionEvent).deferReply().queue()
             log.info("The event is of type: $event")
             val command = applicationContext.getBean(name) as Command
             log.info("The command name was detected as $name")

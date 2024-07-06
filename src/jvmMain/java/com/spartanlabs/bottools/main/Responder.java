@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 public class Responder {
 	Logger log = LoggerFactory.getLogger(this.getClass());
+	boolean acting = false;
 	@SuppressWarnings("rawtypes")
 	private HashMap<Class, List<EventAction>> actionMap = new HashMap<Class, List<EventAction>>();
 
@@ -42,10 +43,12 @@ public class Responder {
 	}
 	
 	void actOn(Event event) {
-		actionMap.get(event.getClass()).forEach(eventAction -> eventAction.perform(event));
+		acting = true;
 		log.info("Responder is responding to the event: " + event.getClass().getSimpleName() + " with " + actionMap.get(event.getClass()).size() + " actions");
+		actionMap.get(event.getClass()).forEach(eventAction -> eventAction.perform(event));
+		acting = false;
 	}
-	public void removeReaction(EventAction reaction){
+	public void removeButtonReaction(ButtonInteractionAction reaction){
 		actionMap.values().forEach(actionList->actionList.remove(reaction));
 	}
 	public void addOnGuildJoinAction(GuildJoinAction onEventAction) {
@@ -79,7 +82,16 @@ public class Responder {
 		actionMap.get(MessageContextInteractionEvent.class).add(onEventAction);
 	}
 	public void addOnButtonInteractionAction(ButtonInteractionAction onEventAction) {
-		actionMap.get(ButtonInteractionEvent.class).add(onEventAction);
+		new Thread(()->{
+			while(acting){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			actionMap.get(ButtonInteractionEvent.class).add(onEventAction);
+		}).start();
 	}
 	public <EventType extends Event> void on(EventAction<EventType> action){
 		actionMap.get(action.getClass().getMethods()[0].getParameters()[0].getType()).add(action);

@@ -7,18 +7,15 @@ import com.spartanlabs.bottools.botactions.tts
 import com.spartanlabs.bottools.commands.GameStatsCommand
 import com.spartanlabs.bottools.commands.MethodCommand
 import com.spartanlabs.bottools.main.Bot
+import com.spartanlabs.generaltools.to
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
-import com.spartanlabs.generaltools.to
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
-@OptIn(ExperimentalContracts::class)
 class DotaCommand: GameStatsCommand("dota2","https://www.dotabuff.com") {
     private val patchNoteURL = "https://steamdb.info/api/PatchnotesRSS/?appid=570"
     init {

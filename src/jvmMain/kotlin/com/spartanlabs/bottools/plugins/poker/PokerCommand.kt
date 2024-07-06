@@ -6,6 +6,7 @@ import com.spartanlabs.bottools.main.*
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.Channel
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
@@ -23,7 +24,6 @@ class PokerCommand() : Command("poker") {
         override val brief = "creates a new table for people to play at"
         override val details = "creates a new table for people to play at"
         lateinit var table: Table
-        var reaction:EventAction.ButtonInteractionAction = ::onButtonClick as EventAction.ButtonInteractionAction
         override fun invoke(args: Array<String>) {
             targetMember!!.user.name.let { creatorName ->
                 val channel = guild createCategory "Poker Tables" createChannel "$creatorName's poker table"
@@ -33,10 +33,10 @@ class PokerCommand() : Command("poker") {
             }
             Bot.responder newButtonInteractionAction ::onButtonClick
             // Create the buttons that will ask the user what they want to do next
-            reply!!.addActionRow(
+            hook!!.editOriginalComponents(ActionRow.of(
                 Button.primary("$poker:$name:sit", "Sit down at your table"),
                 Button.primary("$poker:$name:join", "sit at table and join in on the next game")
-            ).complete()
+            )).complete()
         }
         /**
          * This is the function that is called when a button is clicked
@@ -45,24 +45,18 @@ class PokerCommand() : Command("poker") {
         private fun onButtonClick(event: ButtonInteractionEvent) {
             when (event.button.id) {
                 "$poker:$name:sit" -> {
-                   Player(event.user.name) attemptSitAt table
+                    Player(event.user.name) attemptSitAt table
                 }
 
                 "$poker:$name:join" -> Bot say "The table was created but you did not join it" to channel
                 else -> throw Exception("Unknown button id")
             }
             // Since these buttons are only used once, we can remove the response
-            Bot.responder.removeReaction(reaction);
+            Bot.responder.removeButtonReaction(::onButtonClick)
         }
     }
     private val sitAtTable = MethodCommand("sithere", "sit at a table")         { targetMember!! attemptSitAt   channel }
     private val playGame = MethodCommand("playgame", "join in on the next game"){ targetMember!! attemptPlay    channel }
-    private val playerActionListener = object: BotListener(){
-        init{
-            responder newButtonInteractionAction ::performPlayerAction
-            Bot.jda.addEventListener(this)
-        }
-    }
     val Channel.isTable:Boolean
         get() = this in tables.keys
     init {
@@ -84,19 +78,19 @@ class PokerCommand() : Command("poker") {
         else channel > this.toString()
     }}
     private infix fun Member.attemptSitAt(channel: MessageChannel) =
-        if(!channel.isTable) reply!! > "This channel is not associated with a poker table. Please use this command in a poker table channel" +
+        if(!channel.isTable) hook > "This channel is not associated with a poker table. Please use this command in a poker table channel" +
                 " or use `/poker createtable` to create a new table"
         else Player(user.name) attemptSitAt tables[channel]!!
     private infix fun Player.attemptPlay(table:Table) = table addPlayer this
     private infix fun Member.attemptPlay(channel:MessageChannel) {
-        if(!channel.isTable) reply!! > "This channel is not associated with a poker table. Please use this command in a poker table channel" +
+        if(!channel.isTable) hook > "This channel is not associated with a poker table. Please use this command in a poker table channel" +
                 " or use `/poker createtable` to create a new table"
         else {
-            val player = Player(user.name)
+            val player = Player(user.name, Integer.parseInt(guild/member-"money"))
             val table = tables[channel]!!
             player attemptPlay table
-            handles[table]!![player] = scEvent!!.deferReply().complete()
-            say("Waiting for the next game to start")
+            handles[table]!![player] = hook!!
+            channel > "You will be taking part in the next game when it starts."
         }
     }
     companion object{
@@ -105,48 +99,55 @@ class PokerCommand() : Command("poker") {
         private val tables = HashMap<TextChannel,Table>()
         private val handles = HashMap<Table, HashMap<Player, InteractionHook>>()
         internal fun promptForAction(table:Table, player:Player, rotationState:RotationState){
+            log.info("Prompting ${player.name} at table $table for action. Rotation state is $rotationState")
+            val playerThread = table.perspectives[player]!!
+            playerThread > rotationState.promptMessage
+            val lastMessage = playerThread.history.retrievePast(1).complete()[0]
             val handle = handles[table]!![player]!!
+            Bot.responder newButtonInteractionAction ::performPlayerAction
             when(rotationState){
                 RotationState.LITTLEBLIND ->{
-                    MessageCreateData.fromContent("")
-                    handle.editOriginal(MessageEditData.fromContent("It is your turn to place the little blind")
-                        .apply{components.add(ActionRow.of(
-                        Button.success("$poker:$play:littleblind", "Place little blind"),
-                        Button.danger("$poker:$play:fold", "Fold")))})
+                    lastMessage.reply("Please use the buttons below to place the little blind or fold")
+                        .addActionRow(
+                            Button.success("$poker:$play:littleblind", "Place little blind"),
+                            Button.danger("$poker:$play:fold", "Fold")
+                        ).complete()
                 }
-                else ->{}
-                /*
                 RotationState.BIGBLIND ->{
-                    handle.addActionRow(
+                    lastMessage.reply("Please use the buttons below to place the little blind or fold")
+                        .addActionRow(
                         Button.success("$poker:$play:bigblind", "Place big blind"),
                         Button.danger("$poker:$play:fold", "Fold"))
-                    handle.setContent("It is your turn to place the big blind").complete()
                 }
                 RotationState.CHECK ->{
-                    handle.addActionRow(
+                    lastMessage.reply("Please use the buttons below")
+                        .addActionRow(
                         Button.success("$poker:$play:check", "Check"),
                         Button.primary("$poker:$play:bet", "Bet"),
                         Button.secondary("$poker:$play:raise", "Raise"),
                         Button.danger("$poker:$play:fold", "Fold"))
-                    handle.setContent("It is your turn").complete()
                 }
                 RotationState.CALL ->{
-                    handle.addActionRow(
+                    lastMessage.reply("Please use the buttons below")
+                        .addActionRow(
                         Button.success("$poker:$play:call", "Call"),
                         Button.secondary("$poker:$play:raise", "Raise"),
                         Button.danger("$poker:$play:fold", "Fold"))
-                    handle.setContent("It is your turn").complete()
                 }
-
-                 */
+                else ->{}
             }
         }
         private fun performPlayerAction(event:ButtonInteractionEvent){
+            log.info("Performing player action: ${event.button.id}")
             // If the button is not a play action button, then it is not what we are listening for
             if(!event.button.id!!.startsWith("$poker:$play:")) return
-            val channel = event.channel as MessageChannel
+            log.debug("Button is a play action button")
+            val channel = event.channel.asThreadChannel().parentChannel as TextChannel
+            log.debug("Thread parent is $channel")
             val table = tables[channel] ?: return // If the channel is not a table, then exit
+            log.debug("Table is $table")
             val player = table[event.member!!]
+            event.message.delete
             when(event.button.id){
                 "$poker:$play:littleblind" -> {
                     table.acceptPlayerAction(player, PlayerAction.LITTLEBLIND)
@@ -181,7 +182,7 @@ class PokerCommand() : Command("poker") {
 
         internal fun promptGameStart(table:Table, playingNext: Set<Player>) {
             handles[table]!!.filter { it.key in playingNext }.forEach { (player, handle) ->
-                handle.editOriginal(MessageEditData.fromContent("The next game will be starting soon)")).complete()
+                handle.editOriginal(MessageEditData.fromContent("The next game will be starting soon")).complete()
             }
         }
     }

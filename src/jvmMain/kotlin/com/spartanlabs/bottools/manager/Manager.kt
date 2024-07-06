@@ -1,5 +1,6 @@
 package com.spartanlabs.bottools.manager
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
@@ -36,8 +38,12 @@ fun start(bot: Lazy<Bot>){
 private fun BotUI(){
     var vm = remember { viewModel }
     var statusText = vm.generalState
-    MaterialTheme{Row{
-        Column(Modifier.fillMaxHeight().fillMaxWidth().weight(.22F)) {
+    MaterialTheme(){
+        Image(painterResource("beach.webp"),"beach",
+            Modifier.fillMaxSize())
+        Row{
+        Column(Modifier.fillMaxHeight().fillMaxWidth().weight(.22F),
+        ) {
             Spacer(modifier = Modifier.height(10.dp))
             StartButton()
             Spacer(modifier = Modifier.height(10.dp))
@@ -99,11 +105,11 @@ private fun StartButton() {
                 buttonText = "Running!"
                 alignment = Alignment.TopStart
                 runAsync {
-                    Bot.start()
+                    Bot
                     vm.bot
                 }
             },
-            modifier = Modifier.height(100.dp).width(250.dp)
+            modifier = Modifier.height(80.dp).width(200.dp)
         ) {
             Column {
                 Text(

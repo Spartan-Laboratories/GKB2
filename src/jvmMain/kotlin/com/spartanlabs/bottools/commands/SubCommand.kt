@@ -12,6 +12,7 @@ abstract class SubCommand(name: String, protected val parent: Command) : Command
     override val targetMember   by parent::targetMember
     override var channel        by parent::channel
     override var reply          by parent::reply
+    override var hook           by parent::hook
     val nestLevel
         get() = getNestLevel(parent)
     private var subcommandData      : SubcommandData?       = null

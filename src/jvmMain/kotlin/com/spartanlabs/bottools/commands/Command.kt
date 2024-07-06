@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.commands.*
 import net.dv8tion.jda.api.interactions.commands.build.*
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
@@ -53,6 +54,7 @@ abstract class Command protected constructor(val name: String) {
             field = value
         }
     open var messageEvent: MessageReceivedEvent? = null
+    open var hook: InteractionHook? = null
     open lateinit var guild: Guild
     open lateinit var channel: MessageChannel
     open lateinit var message: Message
@@ -68,14 +70,12 @@ abstract class Command protected constructor(val name: String) {
         }
     /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
     protected var jda = Bot.jda
-    protected val guilds
-        get() = jda.guilds
+    protected val guilds by jda::guilds
     protected var terminalArg = 0
     protected var eb = EmbedBuilder()
-    protected var args = Array<String>(0){""}
+    protected var args = Array(0){""}
         private set
     open var reply: ReplyCallbackAction? = null
-
     val subCommands by lazy{ HashMap<String, SubCommand>()}
     protected var subCommandRequired = false
     var isInteractible = false
@@ -87,7 +87,7 @@ abstract class Command protected constructor(val name: String) {
     var scEvent: SlashCommandInteractionEvent? = null
     val get     by lazy { this + "get" }
     val set     by lazy { this + "set" }
-    val enable  by lazy { this + "enable" }
+    val enable  by lazy { this + "enFable" }
     val disable by lazy { this + "disable" }
     val test    by lazy { this + "test" }
     val admin   by lazy { this + "admin" }
@@ -123,10 +123,7 @@ abstract class Command protected constructor(val name: String) {
     open operator fun invoke(){
         when(event){
             is MessageReceivedEvent             -> this(Parser parse event as MessageReceivedEvent)
-            is GenericCommandInteractionEvent   -> with(event as GenericCommandInteractionEvent){
-                reply = deferReply()
-                this@Command(this)
-            }
+            is GenericCommandInteractionEvent   -> this@Command(event as GenericCommandInteractionEvent)
         }
     }
     operator fun invoke(interaction: GenericCommandInteractionEvent) = when(interaction){
@@ -135,6 +132,7 @@ abstract class Command protected constructor(val name: String) {
         is SlashCommandInteractionEvent                                     -> {
             log.info("Reaction to slash command interaction by ${interaction.member}")
             scEvent = interaction
+            hook = scEvent!!.hook
             this(Parser parse interaction)
         }
         else                                                                -> null
@@ -359,6 +357,10 @@ abstract class Command protected constructor(val name: String) {
         (if(this!=null)this@Command::`reply with`else this@Command::say)(message);
         return 0
     }
+    protected operator fun InteractionHook?.compareTo(message: String):Int{
+        this?.editOriginal(message)?.complete()
+        return 0
+    }
     protected operator fun MessageChannel.compareTo(message: String)        = 0.also{Bot say message in this}
     protected operator fun MessageChannel.compareTo(embed:MessageEmbed)     = 0.also{sendMessageEmbeds(embed).complete()}
     protected operator fun MessageChannel.compareTo(file:File)              = 0.also{Bot send file in this}
@@ -375,4 +377,5 @@ abstract class Command protected constructor(val name: String) {
     fun MethodCommand(name:String, brief:String, onExecute: (Array<String>)->Unit) = MethodCommand(this, name, brief, onExecute)
     protected fun Option(name:String, description:String, required:Boolean = true, type:String = "string",) = Option(type,name, description, required)
     protected infix fun DatabaseAccessPoint.to(value:String?) = this to (value?:"")
+    protected val Message.delete:Unit get() = delete
 }

@@ -9,8 +9,8 @@
             <value>poker</value>
         </list></constructor-arg>
     </bean>
-    <bean id="dota2" class="com.spartanlabs.bot.commands.DotaCommand"/>
-    <bean id="poe" class="com.spartanlabs.bot.commands.PalOfExile"/>
+    <bean id="dota2" class="com.spartanlabs.bot.commands.DotaCommand" parent="command"/>
+    <bean id="poe" class="com.spartanlabs.bot.commands.PalOfExile" parent="command"/>
     <!--bean id="doge" class="com.spartanlabs.bot.commands.DogeCommand"/-->
     <!--context:annotation-config/-->
     <!--context:component-scan base-package="com.spartanlabs.bot.commands"/-->

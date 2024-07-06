@@ -31,8 +31,9 @@ internal class Table(internal val channel: TextChannel, var admin:Player, intern
     internal infix fun addPlayer(player:Player) {
         playingNext.add(player)
         if(playingNext.size >= 2) {
+            state = State.IN_PROGRESS
             PokerCommand.promptGameStart(this, playingNext)
-            Thread.sleep(10000)
+            PokerCommand.promptForAction(this, playingNext.first(), RotationState.LITTLEBLIND)
             game = Game(playingNext)
             playingNext.clear()
         }
@@ -44,7 +45,7 @@ internal class Table(internal val channel: TextChannel, var admin:Player, intern
             PlayerAction.BIGBLIND                                   -> RotationState.CHECK
             PlayerAction.CHECK                                      -> RotationState.CHECK
             PlayerAction.BET,PlayerAction.CALL,PlayerAction.RAISE   -> RotationState.CALL
-            PlayerAction.FOLD                                       -> RotationState.CALL//Here I should check if there is only one player left
+            PlayerAction.FOLD                                       -> RotationState.CALL //TODO Here I should check if there is only one player left
         }
         PokerCommand.promptForAction(this,player, nextPrompt)
     }

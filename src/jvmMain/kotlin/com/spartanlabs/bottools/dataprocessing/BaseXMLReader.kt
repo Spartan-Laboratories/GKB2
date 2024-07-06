@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.*
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import kotlin.Result
 
 /**
  * A wrapper around an existing XML reading library
@@ -129,27 +130,25 @@ open class BaseXMLReader : XMLReader {
     }
     infix fun create(node : String) : Node = newChild(currentNode, node )
     infix fun createCategory(node :String) = (this create node).also { currentNode = it }
-    @JvmOverloads
-    private fun removeTag(root: Node = this.root, child: Node?) {
-        if (child != null)
-            root.removeChild(child)
+    private fun removeTag(root: Node = this.root, child: Node) {
+        root.removeChild(child)
         write()
     }
 
-    @JvmOverloads
-    fun removePossibleTag(root: Node? = this.root, child: Node?) {
-        if (root == null || child == null) return
+    fun removePossibleTag(root: Node? = this.root, child: Node?):kotlin.Result<Node>{
+        if (root == null)
+            return Result.failure(NullPointerException("The root node is null"))
+        if (child == null)
+            return Result.failure(NullPointerException("The child node is null"))
         removeTag(root, child)
+        return Result.success(root)
     }
 
-    @JvmOverloads
     fun removeTag(root: Node = this.root, child: String) =
-        removeTag(root, getChild(root, child))
-
-    @JvmOverloads
-    fun removeTagByText(root: Node = this.root, textValue: String) {
-        for (node in root.children()) if (getValue(node) == textValue) removeTag(root, node)
-    }
+        getChild(root, child)?.let{childNode->
+            removeTag(root, childNode)
+            Result.success(Unit)
+        }?: Result.failure(NoSuchElementException("The child node $child does not exist in the root node $root"))
 
     fun replaceValue(newValue: String, vararg nodes: Node) {
         nodes[0].appendChild(doc!!.createTextNode(newValue))
@@ -166,7 +165,7 @@ open class BaseXMLReader : XMLReader {
     fun getChild(parent: Node, name: String): Node? {
         for(node in parent.children())
             if (node.nodeName == name)
-                return node;
+                return node
         return null
     }
 

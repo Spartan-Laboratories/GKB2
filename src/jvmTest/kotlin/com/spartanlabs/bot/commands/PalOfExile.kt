@@ -11,7 +11,7 @@ import com.spartanlabs.webtools.WebViewer
 import com.spartanlabs.generaltools.to
 import java.lang.IndexOutOfBoundsException
 private val webviewer = WebViewer()
-class PalOfExile() : GameStatsCommand("poe", "https://poe.ninja/challenge/currency") {
+class PalOfExile:GameStatsCommand("poe", "https://poe.ninja/challenge/currency") {
     //override var brief = "Your best pal in all of Oriath"
     //override var details = "Helps find Path of Exile information"
     override fun invoke(args: Array<String>) {}
@@ -57,7 +57,7 @@ class PalOfExile() : GameStatsCommand("poe", "https://poe.ninja/challenge/curren
             val url = "https://poe.ninja/challenge/$ninjaGroupingName/$ninjaCurrencyName"
             val screenshot = webviewer screenshot url
             val categorySize:CategorySize = when(name){
-                "currency","shard"  -> CategorySize.BUYSELL
+                "currency","shart"  -> CategorySize.BUYSELL
                 else                -> CategorySize.BUYONLY
             }
             val crop = cropImage(screenshot, 145, 285, categorySize.width, categorySize.height)
@@ -67,10 +67,10 @@ class PalOfExile() : GameStatsCommand("poe", "https://poe.ninja/challenge/curren
     }
     private enum class CategorySize(val width:Int, val height:Int){
 
-        BUYSELL(CategorySize.defaultWidth,320),
+        BUYSELL(CategorySize.defaultWidth,325),
         BUYONLY(CategorySize.defaultWidth, CategorySize.defaultHeight);
         companion object {
-            private const val defaultWidth = 330
+            private const val defaultWidth = 325
             private const val defaultHeight = 254
         }
     }
